@@ -210,8 +210,8 @@ function sampleSize() {
 for (const id of ["ssP", "ssM", "ssD"]) $(id).addEventListener("input", sampleSize);
 
 fetch("/api/results").then(async (res) => {
-  if (!res.ok) { $("pending").hidden = false; return; }
-  const results = await res.json();
+  const results = res.ok ? await res.json() : { pending: true };
+  if (results.pending) { $("pending").hidden = false; return; }
   $("report").hidden = false;
   render(results);
   sampleSize();

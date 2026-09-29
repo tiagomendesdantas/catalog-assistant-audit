@@ -97,21 +97,22 @@ def product(code: str) -> dict[str, Any]:
     return {"code": code, "record": render(item), "source": OFF_PRODUCT.format(code=code)}
 
 
-def _static_json(name: str) -> Any:
+def _static_json(name: str, pending: Any) -> Any:
+    """Published results, or `pending` before the test run is published (not an error)."""
     path = WEB / name
     if not path.exists():
-        raise HTTPException(404, f"{name} has not been generated yet.")
+        return pending
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 @app.get("/api/results")
 def results() -> Any:
-    return _static_json("results.json")
+    return _static_json("results.json", {"pending": True})
 
 
 @app.get("/api/examples")
 def examples() -> Any:
-    return _static_json("examples.json")
+    return _static_json("examples.json", [])
 
 
 class Ask(BaseModel):

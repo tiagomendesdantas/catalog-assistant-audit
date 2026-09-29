@@ -46,7 +46,9 @@ function recordList(record) {
     const dd = el("dd");
     if (Array.isArray(value)) dd.textContent = value.join(", ");
     else if (value && typeof value === "object") {
-      dd.textContent = Object.entries(value).map(([k, v]) => `${k} ${v}`).join(" · ");
+      const inner = el("dl", { class: "record nested" });
+      for (const [k, v] of Object.entries(value)) inner.append(el("dt", {}, k), el("dd", {}, String(v)));
+      dd.append(inner);
     } else dd.textContent = String(value);
     dl.append(dd);
   }
@@ -133,11 +135,11 @@ async function ask(event) {
 async function examples() {
   const box = $("examples");
   const res = await fetch("/api/examples");
-  if (!res.ok) {
+  const items = res.ok ? await res.json() : [];
+  if (!items.length) {
     box.replaceChildren(el("p", { class: "small muted" }, "Examples appear here after the test run is published."));
     return;
   }
-  const items = await res.json();
   box.replaceChildren();
   for (const ex of items) {
     const card = el("div", { class: "card" });

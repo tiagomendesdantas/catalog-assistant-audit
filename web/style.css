@@ -66,7 +66,9 @@ p, li { max-width: 72ch; }
   padding: 18px 20px;
   margin: 12px 0;
 }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+dl.record.nested { margin: 0; grid-template-columns: max-content max-content; gap: 2px 12px; }
+dl.record.nested dd { font-variant-numeric: tabular-nums; }
 @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
 
 input[type="search"], input[type="text"], input[type="number"] {
