@@ -52,6 +52,9 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0, help="first N questions only (smoke test)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--confirm-test", action="store_true")
+    ap.add_argument("--mode", choices=["batch", "flex"], default="batch",
+                    help="flex: direct calls on the flex tier, for models the Batch API rejects")
+    ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()
     if args.split == "test" and not (args.confirm_test or args.dry_run):
         sys.exit("Test runs are counted in the README. Re-run with --confirm-test.")
@@ -88,6 +91,10 @@ def main() -> None:
     load_dotenv()
     client = openai.OpenAI()
     started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    if args.mode == "flex":
+        rows = run_flex(client, requests, args.workers)
+        finish(args, configs, questions, requests, qpath, started, rows, batch_id=None)
+        return
     lines = "".join(
         json.dumps({"custom_id": cid, "method": "POST", "url": ENDPOINT, "body": body}) + "\n"
         for cid, body in requests
@@ -104,33 +111,67 @@ def main() -> None:
     if batch.status != "completed":
         sys.exit(f"batch ended as {batch.status}: {batch.errors}")
 
+    rows = []
+    for file_id in (batch.output_file_id, batch.error_file_id):
+        if not file_id:
+            continue
+        for raw in client.files.content(file_id).text.splitlines():
+            item = json.loads(raw)
+            response = item.get("response") or {}
+            ok = response.get("status_code") == 200
+            row = {"custom_id": item["custom_id"], "type": "succeeded" if ok else "errored"}
+            if ok:
+                row["message"] = response["body"]
+            else:
+                row["error"] = item.get("error") or response.get("body")
+            rows.append(row)
+    finish(args, configs, questions, requests, qpath, started, rows, batch_id=batch.id)
+
+
+def run_flex(client, requests, workers: int) -> list[dict]:
+    """Direct calls on the flex tier (same price as batch). Flex can queue, so the timeout is long
+    and a busy tier is retried; a request that still fails is recorded, never dropped."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    import openai
+
+    flex = client.with_options(timeout=900.0, max_retries=6)
+
+    def call(item):
+        cid, body = item
+        try:
+            completion = flex.chat.completions.create(service_tier="flex", **body)
+            return {"custom_id": cid, "type": "succeeded", "message": completion.model_dump(mode="json")}
+        except openai.OpenAIError as exc:  # recorded as a failure in the run, graded as "failed"
+            return {"custom_id": cid, "type": "errored", "error": f"{type(exc).__name__}: {exc}"[:500]}
+
+    rows = []
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for i, row in enumerate(pool.map(call, requests), 1):
+            rows.append(row)
+            if i % 50 == 0 or i == len(requests):
+                failed = sum(r["type"] != "succeeded" for r in rows)
+                print(f"  {i}/{len(requests)} done · failed {failed}", flush=True)
+    return rows
+
+
+def finish(args, configs, questions, requests, qpath, started, rows, batch_id) -> None:
     run_id = f"{time.strftime('%Y%m%d-%H%M%S', time.gmtime())}-{args.model}-{args.split}"
     out_dir = RUNS / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
-    seen: set[str] = set()
+    seen = {r["custom_id"] for r in rows}
     with (out_dir / "raw.jsonl").open("w", encoding="utf-8") as fh:
-        for file_id in (batch.output_file_id, batch.error_file_id):
-            if not file_id:
-                continue
-            for raw in client.files.content(file_id).text.splitlines():
-                item = json.loads(raw)
-                response = item.get("response") or {}
-                ok = response.get("status_code") == 200
-                row = {"custom_id": item["custom_id"], "type": "succeeded" if ok else "errored"}
-                if ok:
-                    row["message"] = response["body"]
-                else:
-                    row["error"] = item.get("error") or response.get("body")
-                seen.add(item["custom_id"])
-                fh.write(json.dumps(row, ensure_ascii=False) + "\n")
-        for cid, _ in requests:  # a request missing from both files still counts, as a failure
+        for row in rows:
+            fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+        for cid, _ in requests:  # a request missing from the results still counts, as a failure
             if cid not in seen:
                 fh.write(json.dumps({"custom_id": cid, "type": "missing"}) + "\n")
 
     entry = {
         "run_id": run_id, "split": args.split, "configs": configs, "model": args.model,
-        "reasoning_effort": args.effort, "questions": len(questions), "requests": len(requests),
-        "batch_id": batch.id, "questions_sha256": hashlib.sha256(qpath.read_bytes()).hexdigest(),
+        "reasoning_effort": args.effort, "mode": args.mode, "questions": len(questions),
+        "requests": len(requests), "batch_id": batch_id,
+        "questions_sha256": hashlib.sha256(qpath.read_bytes()).hexdigest(),
         "started": started, "ended": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "limit": args.limit,
     }
