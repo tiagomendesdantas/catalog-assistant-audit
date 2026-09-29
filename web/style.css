@@ -127,7 +127,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-sp
 
 .hero { font-size: 56px; font-weight: 600; line-height: 1.05; margin: 4px 0; }
 .chart { width: 100%; height: auto; display: block; }
-.chart text { fill: var(--ink-2); font: 13px var(--sans); }
+.chart text { fill: var(--ink-2); font: 14px var(--sans); }
 .chart .tick text { fill: var(--muted); font-variant-numeric: tabular-nums; }
 .chart .grid line { stroke: var(--grid); stroke-width: 1; }
 .chart .ci { stroke: var(--accent); stroke-width: 2; stroke-linecap: round; }

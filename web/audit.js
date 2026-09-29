@@ -21,6 +21,7 @@ const diff = (d) => (d ? `${pts(d.rate)} [${pts(d.low)}, ${pts(d.high)}]` : "–
 
 const ORDER = ["A", "B", "C", "C+check"];
 const CONDITIONS = { clean: "Exact record", retrieval: "With similar products" };
+const SHORT = { A: "A · Baseline", B: "B · Grounded", C: "C · Evidence", "C+check": "C + check" };
 const NAMES = {
   A: "A · Baseline", B: "B · Grounded", C: "C · Grounded + evidence", "C+check": "C + evidence check",
 };
@@ -51,7 +52,7 @@ function niceDomain(maxHigh) {
 }
 
 function dotChart(svg, rows, label, domain, condition) {
-  const W = 460, left = 150, right = 18, top = 8, rowH = 40;
+  const W = 460, left = 128, right = 18, top = 8, rowH = 40;
   const H = top + rows.length * rowH + 32;
   const x = (v) => left + (v / domain) * (W - left - right);
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
@@ -68,7 +69,7 @@ function dotChart(svg, rows, label, domain, condition) {
   rows.forEach((r, i) => {
     const cy = top + i * rowH + rowH / 2;
     const g = sv("g", { class: "row" });
-    g.append(sv("text", { x: 0, y: cy + 4 }, NAMES[r.config]));
+    g.append(sv("text", { x: 0, y: cy + 4 }, SHORT[r.config]));
     const text = `${NAMES[r.config]}, ${CONDITIONS[condition]}: ${pct(r.rate)}, 95% interval ${pct(r.low)} to ${pct(r.high)}, ${r.n} questions`;
     const hit = sv("rect", {
       class: "hit", x: left - 6, y: cy - rowH / 2 + 3, width: W - left - right + 12, height: rowH - 6,

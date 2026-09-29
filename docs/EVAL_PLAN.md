@@ -95,6 +95,11 @@ Recorded here so the reader can see what was tuned before the test run.
 
 **Prompts, grading rules and question bank are frozen from here.** The next run is the test run.
 
+Test run note: the first gpt-6-luna test submission to the Batch API was refused by the provider
+before any request ran ("Enqueued token limit reached … 2,000,000 enqueued tokens"); it produced no
+responses and is not in the run log. The test run for both models used direct calls on the flex tier,
+which is priced like the Batch API.
+
 ## Rules for the test split
 
 - Prompts are adjusted only on development questions.
