@@ -62,6 +62,13 @@ def test_stratified_interval_covers_known_rate():
     assert 0.92 <= hits / reps <= 0.98
 
 
+def test_all_zero_differences_do_not_report_certainty():
+    est = stratified({"a": ([0.0] * 120, [1.0] * 120)}, {"a": 1000}, bounded=False)
+    assert est.rate == 0.0
+    assert est.low < -0.02 and est.high > 0.02
+    assert est.low == pytest.approx(-est.high)
+
+
 def test_all_zero_outcomes_do_not_report_certainty():
     est = stratified({"a": ([0] * 120, [1.0] * 120)}, {"a": 1000})
     assert est.rate == 0.0

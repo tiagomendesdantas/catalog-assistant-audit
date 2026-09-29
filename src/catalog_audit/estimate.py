@@ -73,9 +73,14 @@ def stratified(groups: dict[str, tuple[Sequence[float], Sequence[float]]],
         var += share**2 * (0.0 if math.isnan(v_h) else v_h)
         n += len(y)
         n_eff += ne_h
-    if bounded and var == 0.0:
-        low, high = wilson(rate, n_eff)
-        return Estimate(rate, low, high, n)
+    if var == 0.0:
+        if bounded:
+            low, high = wilson(rate, n_eff)
+            return Estimate(rate, low, high, n)
+        # A difference with no discordant question at all: bound the share of questions that could
+        # still disagree by the Wilson upper limit for 0 of n_eff, on both sides.
+        _, upper = wilson(0.0, n_eff)
+        return Estimate(rate, rate - upper, rate + upper, n)
     half = Z * math.sqrt(var)
     low, high = rate - half, rate + half
     if bounded:
