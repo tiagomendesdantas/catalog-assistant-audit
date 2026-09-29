@@ -2,7 +2,7 @@
 
 How often does a grocery product assistant answer a question its catalog record cannot answer?
 This project measures it on 5,000 real products, for three versions of the same assistant, and
-serves the best one as a demo that shows its evidence.
+serves the grounded version as a demo that shows its evidence.
 
 **Live demo:** _added at deployment_ · **Results:** [`/audit`](#results)
 
