@@ -28,6 +28,18 @@ from catalog_audit.questions import read
 
 RUNS = DATA / "runs"
 ENDPOINT = "/v1/chat/completions"
+
+
+def load_dotenv(path: Path = ROOT / ".env") -> None:
+    """Read KEY=VALUE lines from a local, git-ignored .env; never overrides the environment."""
+    import os
+
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        key, sep, value = line.strip().partition("=")
+        if sep and key and not key.startswith("#"):
+            os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 BATCH_DISCOUNT = 0.5  # Batch API price relative to standard; confirm on the pricing page per model
 
 
@@ -73,6 +85,7 @@ def main() -> None:
 
     import openai
 
+    load_dotenv()
     client = openai.OpenAI()
     started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     lines = "".join(
