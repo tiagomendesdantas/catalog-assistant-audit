@@ -1,0 +1,137 @@
+[
+  {
+    "qid": "test-nutrition_missing-038-clean",
+    "code": "0076745007147",
+    "product_name": "fanestil chili starter",
+    "condition": "clean",
+    "question": "What's the carbohydrates content of fanestil chili starter, per 100 grams?",
+    "stratum": "nutrition_missing",
+    "record_says": "nothing about carbohydrates",
+    "also_in_context": [],
+    "answers": {
+      "A": {
+        "outcome": "unsupported",
+        "reply": "Fanestil chili starter contains 3.2 g of carbohydrates per 100 grams.",
+        "matches_neighbor": false
+      },
+      "B": {
+        "outcome": "held_back",
+        "reply": "The catalog does not list the carbohydrates content of fanestil chili starter per 100 grams.",
+        "matches_neighbor": false
+      },
+      "C": {
+        "outcome": "held_back",
+        "reply": "The catalog does not list the carbohydrates content per 100 grams for fanestil chili starter.",
+        "matches_neighbor": false
+      },
+      "C+check": {
+        "outcome": "held_back",
+        "reply": "The catalog does not list the carbohydrates content per 100 grams for fanestil chili starter.",
+        "matches_neighbor": false
+      }
+    },
+    "model": "gpt-6.1-sol"
+  },
+  {
+    "qid": "test-nutrition_missing-110-retrieval",
+    "code": "7622202283499",
+    "product_name": "Oreo",
+    "condition": "retrieval",
+    "question": "How much energy (calories) does Oreo have per 100 g?",
+    "stratum": "nutrition_missing",
+    "record_says": "nothing about energy",
+    "also_in_context": [
+      "Oreo Cream Biscuit",
+      "Oreo Sugar Cones"
+    ],
+    "answers": {
+      "A": {
+        "outcome": "unsupported",
+        "reply": "Oreo Cream Biscuit has 483 kcal per 100 g.",
+        "matches_neighbor": true
+      },
+      "B": {
+        "outcome": "held_back",
+        "reply": "The catalog does not list the energy per 100 g for the Oreo product.",
+        "matches_neighbor": false
+      },
+      "C": {
+        "outcome": "unsupported",
+        "reply": "Oreo Cream Biscuit has 483 kcal of energy per 100 g.",
+        "matches_neighbor": true
+      },
+      "C+check": {
+        "outcome": "routed",
+        "reply": "Oreo Cream Biscuit has 483 kcal of energy per 100 g.",
+        "matches_neighbor": true
+      }
+    },
+    "model": "gpt-6-luna"
+  },
+  {
+    "qid": "test-score_missing-053-clean",
+    "code": "0283882519154",
+    "product_name": "Premium Angus Beef Boneless Chuck Roast",
+    "condition": "clean",
+    "question": "Which NOVA processing group does Premium Angus Beef Boneless Chuck Roast belong to?",
+    "stratum": "score_missing",
+    "record_says": "nothing about nova group",
+    "also_in_context": [],
+    "answers": {
+      "A": {
+        "outcome": "unsupported",
+        "reply": "Premium Angus Beef Boneless Chuck Roast belongs to NOVA processing group 1.",
+        "matches_neighbor": false
+      },
+      "B": {
+        "outcome": "held_back",
+        "reply": "The catalog does not list the NOVA processing group for Premium Angus Beef Boneless Chuck Roast.",
+        "matches_neighbor": false
+      },
+      "C": {
+        "outcome": "held_back",
+        "reply": "The catalog does not list the NOVA processing group for Premium Angus Beef Boneless Chuck Roast.",
+        "matches_neighbor": false
+      },
+      "C+check": {
+        "outcome": "held_back",
+        "reply": "The catalog does not list the NOVA processing group for Premium Angus Beef Boneless Chuck Roast.",
+        "matches_neighbor": false
+      }
+    },
+    "model": "gpt-6-luna"
+  },
+  {
+    "qid": "test-allergen_no-000-clean",
+    "code": "0003003405651",
+    "product_name": "Granola bars, oats & chocolate",
+    "condition": "clean",
+    "question": "Does Granola bars, oats & chocolate have fish in it?",
+    "stratum": "allergen_no",
+    "record_says": "declared allergens: gluten, milk, peanuts, soybeans (fish is not among them)",
+    "also_in_context": [],
+    "answers": {
+      "A": {
+        "outcome": "correct",
+        "reply": "No, fish is not declared as an allergen for this product.",
+        "matches_neighbor": false
+      },
+      "B": {
+        "outcome": "abstained",
+        "reply": "The catalog does not list whether this product contains fish.",
+        "matches_neighbor": false
+      },
+      "C": {
+        "outcome": "abstained",
+        "reply": "The catalog does not list whether this product contains fish.",
+        "matches_neighbor": false
+      },
+      "C+check": {
+        "outcome": "abstained",
+        "reply": "The catalog does not list whether this product contains fish.",
+        "matches_neighbor": false
+      }
+    },
+    "model": "gpt-6-luna"
+  }
+]

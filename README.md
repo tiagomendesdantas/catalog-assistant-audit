@@ -4,7 +4,8 @@ How often does a grocery product assistant answer a question its catalog record 
 This project measures it on 5,000 real products, for three versions of the same assistant, and
 serves the grounded version as a demo that shows its evidence.
 
-**Live demo:** _added at deployment_ · **Results:** [`/audit`](#results)
+**Live demo:** [web-production-78cffc.up.railway.app](https://web-production-78cffc.up.railway.app) ·
+**Results page:** [/audit](https://web-production-78cffc.up.railway.app/audit)
 
 ## The problem
 
@@ -33,7 +34,54 @@ what they change.
 
 ## Results
 
-_Written from the test run._
+Test split: 840 questions per model and condition, 360 of them about something the record does
+not list. Two OpenAI models, `reasoning_effort="low"`, run on 2026-09-29. Rates in percent with
+95% intervals. "Invented" is the share of unanswerable questions that got an answer anyway;
+"correct" is the share of answerable questions answered correctly. Every question was asked twice:
+with the exact record, and with the record plus the two products whose names are most similar.
+
+**gpt-6.1-sol**
+
+| Configuration | Invented, exact record | Invented, similar products | Correct, exact record | Correct, similar products |
+|---|---:|---:|---:|---:|
+| A · baseline | 0.3% (0.0–2.5) | 0.3% (0.0–2.5) | 100.0% (97.8–100.0) | 100.0% (97.8–100.0) |
+| B · grounded | 0.0% (0.0–2.3) | 0.0% (0.0–2.3) | 100.0% (97.8–100.0) | 100.0% (97.8–100.0) |
+| C · grounded + evidence | 0.0% (0.0–2.3) | 0.0% (0.0–2.3) | 100.0% (97.8–100.0) | 100.0% (97.8–100.0) |
+| C + evidence check | 0.0% (0.0–2.3) | 0.0% (0.0–2.3) | 100.0% (97.8–100.0) | 100.0% (97.8–100.0) |
+
+**gpt-6-luna**
+
+| Configuration | Invented, exact record | Invented, similar products | Correct, exact record | Correct, similar products |
+|---|---:|---:|---:|---:|
+| A · baseline | 1.7% (0.0–3.5) | 0.8% (0.0–3.0) | 99.3% (97.0–100.0) | 98.6% (97.2–100.0) |
+| B · grounded | 0.0% (0.0–2.3) | 0.0% (0.0–2.3) | 95.6% (94.1–97.2) | 94.5% (92.6–96.5) |
+| C · grounded + evidence | 0.0% (0.0–2.3) | 0.6% (0.0–2.8) | 94.0% (92.0–96.0) | 93.3% (90.8–95.8) |
+| C + evidence check | 0.0% (0.0–2.3) | 0.0% (0.0–2.3) | 94.0% (92.0–96.0) | 93.3% (90.8–95.8) |
+
+What the numbers say, for this catalog and these question types:
+
+- **The larger model rarely invents, and lookalike products did not confuse it.** gpt-6.1-sol
+  invented one answer in 360 at baseline ("3.2 g of carbohydrates" for a product with no nutrition
+  data) and none once told to answer only from the record. The two similar products in context
+  changed nothing, and the guardrails cost it no accuracy.
+- **On the smaller model, the grounding rule trades invented answers for refused ones.**
+  gpt-6-luna, at a twentieth of the price per token, invented in 0.8–1.7% of cases at baseline. The
+  grounding rule removed that, but lowered accuracy by 3.6 to 5.3 points (paired intervals exclude
+  zero). Nearly all of the loss is one pattern: asked whether a product contains an allergen that is
+  absent from a declared allergen list, B and C said the catalog does not list it in 26 and 34 of
+  120 questions, against 4 for the baseline.
+- **With similar products in context, the smaller model sometimes answered about the wrong
+  product.** Four baseline answers and four evidence-configuration answers matched another product's
+  record. Asked about the calories in "Oreo", it answered with the 483 kcal of "Oreo Cream Biscuit".
+- **The evidence check caught those, and only those.** It sent 4 of configuration C's answers to
+  review. All 4 were answers the record could not support, each taken from a neighbouring product;
+  no correct answer was stopped.
+
+Cost per 1,000 questions at standard prices: gpt-6.1-sol $1.20–1.60 with the exact record and
+$1.89–2.29 with similar products; gpt-6-luna $0.06–0.12. Every test and development run is logged
+in `data/runs/log.jsonl`; the test split was run once per model. The gpt-6-luna run was interrupted
+by an account billing error after 3,802 of 5,040 requests; the 1,238 requests that never got a
+response were re-sent unchanged and merged, and that is logged too.
 
 ## How the numbers are produced
 
@@ -44,14 +92,19 @@ _Written from the test run._
   declared while others are, or no allergen information at all. Pairs whose answer the record can't
   settle (an empty allergen list next to an ingredient list) are excluded by rule. Within each
   stratum, products are drawn at random and one attribute asked per product.
+- **Context.** Each question is asked with the exact record, and again with the record plus the two
+  products whose names are closest (character 3–4-gram TF-IDF, cosine, identical names skipped), in
+  a shuffled order. Ground truth is always the named product's record.
 - **Grading.** Deterministic, against the record. No model grades another model.
 - **Estimation.** Each question carries the inverse of its inclusion probability. Rates use the
-  Hájek estimator with a linearised variance; configurations are compared question by question.
-  The interval code has a coverage test.
+  Hájek estimator with a linearised variance; configurations and conditions are compared question by
+  question. A stratum whose sampled outcomes are all identical contributes the variance implied by
+  its Wilson interval rather than zero, so a rare event is never reported as precisely measured. The
+  interval code has a coverage test.
 - **Discipline.** Products were split into development and test before any question was drawn.
-  Prompts were tuned on development questions only; every test run is logged in
-  `data/runs/log.jsonl`. The plan was committed before the first model call
-  ([`docs/EVAL_PLAN.md`](docs/EVAL_PLAN.md)).
+  Prompts and grading rules were changed on development questions only, and every change is listed
+  with its reason in [`docs/EVAL_PLAN.md`](docs/EVAL_PLAN.md), which was committed before the first
+  model call. Every run is logged in `data/runs/log.jsonl`.
 
 ## Run it
 
@@ -64,9 +117,10 @@ uv run uvicorn catalog_audit.app:app --reload   # demo at http://127.0.0.1:8000
 uv run python scripts/build_snapshot.py
 uv run python -m catalog_audit.questions
 
-# Evaluate (needs OPENAI_API_KEY)
-uv run python scripts/run_eval.py --split dev --model <model> --dry-run
-uv run python scripts/run_eval.py --split dev --model <model>
+# Evaluate (needs OPENAI_API_KEY, in the environment or a git-ignored .env)
+uv run python scripts/run_eval.py --split dev --model gpt-6-luna --dry-run
+uv run python scripts/run_eval.py --split dev --model gpt-6-luna            # Batch API
+uv run python scripts/run_eval.py --split dev --model gpt-6.1-sol --mode flex  # the Batch API refused this model
 uv run python scripts/score.py <run_id>
 ```
 

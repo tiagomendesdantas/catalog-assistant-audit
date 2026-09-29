@@ -22,6 +22,28 @@ from catalog_audit.questions import read
 from catalog_audit.report import build_examples, score
 
 
+def pick_examples(candidates: list[dict], seen_questions: set[str], limit: int = 4) -> list[dict]:
+    """A few instructive disagreements per model, one per kind, in this order: an answer the
+    evidence check sent to review, an answer invented when the record had none, and a refusal of a
+    "not declared" allergen question (the most common refusal). A question already shown for another
+    model is skipped. Deterministic: candidates arrive sorted by question id."""
+    kinds = [
+        lambda ex: ex["answers"].get("C+check", {}).get("outcome") == "routed",
+        lambda ex: ex["answers"].get("A", {}).get("outcome") == "unsupported",
+        lambda ex: ex["stratum"] == "allergen_no"
+        and any(a.get("outcome") == "abstained" for a in ex["answers"].values()),
+    ]
+    chosen: list[dict] = []
+    for kind in kinds:
+        for ex in candidates:
+            base = ex["qid"].rsplit("-", 1)[0]
+            if kind(ex) and base not in seen_questions:
+                chosen.append(ex)
+                seen_questions.add(base)
+                break
+    return chosen[:limit]
+
+
 def fmt(e: dict | None) -> str:
     return "–" if not e else f"{e['rate']:.1%} [{e['low']:.1%}, {e['high']:.1%}]"
 
@@ -70,10 +92,15 @@ def main() -> None:
         out_dir = ROOT / "web" if args.publish else args.preview_dir
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "results.json").write_text(json.dumps(published, indent=2) + "\n", encoding="utf-8")
-        first = args.run_ids[0]
-        rows = [json.loads(line) for line in (DATA / "runs" / first / "graded.jsonl").read_text().splitlines()]
         questions = [q for q in read(DATA / "questions" / "questions.jsonl") if q.split == split]
-        examples = build_examples(rows, questions, load(), per_stratum=1)
+        examples: list[dict] = []
+        seen: set[str] = set()
+        for run_id, entry in zip(args.run_ids, published["runs"], strict=True):
+            rows = [json.loads(line) for line in
+                    (DATA / "runs" / run_id / "graded.jsonl").read_text().splitlines()]
+            candidates = [{**ex, "model": entry["model"]}
+                          for ex in build_examples(rows, questions, load(), per_stratum=3)]
+            examples += pick_examples(candidates, seen)
         (out_dir / "examples.json").write_text(json.dumps(examples, indent=2) + "\n", encoding="utf-8")
         if args.publish:
             results_dir = DATA / "results"

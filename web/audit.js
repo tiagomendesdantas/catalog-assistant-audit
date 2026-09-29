@@ -136,7 +136,7 @@ function render(results, modelName) {
 
   $("heroLabel").textContent =
     `${modelName}, baseline assistant, with similar products in context: questions the record could not answer`;
-  $("hero").textContent = pct(aRetr.rate, 0);
+  $("hero").textContent = pct(aRetr.rate, aRetr.rate < 0.1 ? 1 : 0);  // 0.3% must not read as 0%
   $("heroText").textContent =
     `answered anyway (95% interval ${pct(aRetr.low)}–${pct(aRetr.high)}); with the exact record, ` +
     `${pct(aClean.rate)}. ` + (best ? `${NAMES[best.c]}, with similar products: ${pct(best.e.rate)} ` +

@@ -146,7 +146,7 @@ async function examples() {
     const context = ex.condition === "retrieval"
       ? `With similar products in context: ${ex.also_in_context.join("; ")}`
       : "Exact record only";
-    card.append(el("p", { class: "small muted" }, `${ex.product_name} · ${context}`));
+    card.append(el("p", { class: "small muted" }, `${ex.model} · ${ex.product_name} · ${context}`));
     card.append(el("h3", {}, ex.question));
     card.append(el("p", { class: "small" }, `The record says: ${ex.record_says}`));
     const table = el("table");
