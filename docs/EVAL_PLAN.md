@@ -64,6 +64,23 @@ Recorded here so the reader can see what was tuned before the test run.
     does not say". A sentence defining undeclared allergens was added to the base prompt, so all
     three configurations receive it and the comparison stays like for like.
 
+- **Round 1 (210 development questions, both models).**
+  - Two labelling errors, caught because the models' answers were right: a missing part is known
+    when its whole is 0 g (no fat means no saturated fat), and a product name that names the
+    allergen ("Salted Peanuts") settles the question. Both pair types are now excluded.
+  - With the exact record in context, gpt-6.1-sol answered 120/120 answerable questions correctly
+    in every configuration and invented 1–3 answers out of 90. gpt-6-luna invented 2–4 out of 90;
+    the grounding rule made it decline 8–9 of 30 answerable "not declared" allergen questions.
+
+- **Design change after round 1 (decided by Tiago Dantas, before any test run).** With a clean
+  record, both models are near ceiling, which says little about deployed assistants: those receive
+  whatever the product search returns. Every question is now also asked in a **retrieval**
+  condition: the target record plus the two products whose names are most similar (character
+  3–4-gram TF-IDF, cosine; identical names skipped), in a shuffled order. Ground truth is unchanged.
+  Wrong or unsupported answers that equal another product's value are counted separately. The
+  question bank was regenerated and frozen again; the development/test split is unchanged, and the
+  test split has not been used.
+
 ## Rules for the test split
 
 - Prompts are adjusted only on development questions.

@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from catalog_audit.assistant import EFFORT, MAX_TOKENS, MODEL, request_params
-from catalog_audit.catalog import DATA, load, render_json
+from catalog_audit.catalog import DATA, load, render_context
 from catalog_audit.guard import PRICES_PER_MTOK
 from catalog_audit.questions import read
 
@@ -55,25 +55,28 @@ def main() -> None:
     ap.add_argument("--mode", choices=["batch", "flex"], default="batch",
                     help="flex: direct calls on the flex tier, for models the Batch API rejects")
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--condition", choices=["all", "clean", "retrieval"], default="all")
     args = ap.parse_args()
     if args.split == "test" and not (args.confirm_test or args.dry_run):
         sys.exit("Test runs are counted in the README. Re-run with --confirm-test.")
 
     qpath = DATA / "questions" / "questions.jsonl"
-    questions = [q for q in read(qpath) if q.split == args.split]
+    questions = [q for q in read(qpath) if q.split == args.split
+                 and (args.condition == "all" or q.condition == args.condition)]
     if args.limit:
         questions = questions[: args.limit]
     catalog = load()
     configs = args.configs.split(",")
     requests = [
-        (f"{c}-{q.qid}", request_params(c, render_json(catalog[q.code]), q.text, args.model, args.effort))
+        (f"{c}-{q.qid}", request_params(c, render_context(q.context, catalog), q.text, args.model,
+                                        args.effort))
         for c in configs
         for q in questions
     ]
 
     chars = sum(len(m["content"]) for _, p in requests for m in p["messages"])
     est_in = chars / 3.5 + 300 * len(requests)  # schema and framing overhead
-    est_out = 400 * len(requests)  # low-effort reasoning plus a short JSON answer
+    est_out = 100 * len(requests)  # measured ~45 per call in development round 1; 100 for margin
     line = f"{len(requests)} requests · {len(questions)} questions × {len(configs)} configs · {args.model}"
     if args.model in PRICES_PER_MTOK:
         price_in, price_out = PRICES_PER_MTOK[args.model]

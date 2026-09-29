@@ -114,6 +114,13 @@ def render_json(product: dict[str, Any]) -> str:
     return json.dumps(render(product), ensure_ascii=False, indent=1)
 
 
+def render_context(codes: tuple[str, ...] | list[str], products: dict[str, dict[str, Any]]) -> str:
+    """One code: that record as a JSON object. Several: the search results as a JSON array."""
+    if len(codes) == 1:
+        return render_json(products[codes[0]])
+    return json.dumps([render(products[c]) for c in codes], ensure_ascii=False, indent=1)
+
+
 @lru_cache(maxsize=1)
 def load(path: Path = CATALOG) -> dict[str, dict[str, Any]]:
     with path.open(encoding="utf-8") as fh:

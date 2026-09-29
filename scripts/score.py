@@ -1,7 +1,9 @@
-"""Grade a run and write data/runs/<run_id>/summary.json.
+"""Grade runs and write data/runs/<run_id>/summary.json.
 
-    uv run python scripts/score.py <run_id>
-    uv run python scripts/score.py <run_id> --publish   # also copy to web/results.json (test runs only)
+    uv run python scripts/score.py <run_id> [<run_id> ...]
+    uv run python scripts/score.py <test_run_sol> <test_run_luna> --publish
+
+--publish combines test runs (one per model) into web/results.json; examples come from the first.
 """
 
 from __future__ import annotations
@@ -20,38 +22,55 @@ from catalog_audit.questions import read
 from catalog_audit.report import build_examples, score
 
 
+def fmt(e: dict | None) -> str:
+    return "–" if not e else f"{e['rate']:.1%} [{e['low']:.1%}, {e['high']:.1%}]"
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("run_id")
+    ap.add_argument("run_ids", nargs="+")
     ap.add_argument("--publish", action="store_true")
     args = ap.parse_args()
-    run_dir = DATA / "runs" / args.run_id
-    split = "test" if args.run_id.endswith("-test") else "dev"
     log = [json.loads(line) for line in (DATA / "runs" / "log.jsonl").read_text().splitlines()]
-    entry = next(e for e in log if e["run_id"] == args.run_id)
-    summary = score(run_dir, DATA / "questions" / "questions.jsonl", split, entry["model"])
-    for config, s in summary["configs"].items():
-        h = s["headline"]
-        acc, uns = h["accuracy_when_answerable"], h["unsupported_when_not_in_record"]
-        cost = s["cost_usd_standard_per_1000"]
-        print(f"{config:8s} accuracy {acc['rate']:.1%} [{acc['low']:.1%}, {acc['high']:.1%}]  "
-              f"unsupported {uns['rate']:.1%} [{uns['low']:.1%}, {uns['high']:.1%}]  "
-              f"failed {s['failed']}  " + (f"${cost:.2f}/1k" if cost else "cost unknown"))
+    published: dict = {"models": {}, "runs": []}
+    for run_id in args.run_ids:
+        split = "test" if run_id.endswith("-test") else "dev"
+        entry = next(e for e in log if e["run_id"] == run_id)
+        summary = score(DATA / "runs" / run_id, DATA / "questions" / "questions.jsonl", split,
+                        entry["model"])
+        print(f"\n{run_id}")
+        for condition, block in summary["conditions"].items():
+            for config, s in block["configs"].items():
+                h = s["headline"]
+                cost = s["cost_usd_standard_per_1000"]
+                print(f"  {condition:9s} {config:8s} accuracy {fmt(h['accuracy_when_answerable'])}  "
+                      f"unsupported {fmt(h['unsupported_when_not_in_record'])}  "
+                      f"neighbor-matches {s['matches_neighbor']}  failed {s['failed']}  "
+                      + (f"${cost:.2f}/1k" if cost else ""))
+        for config, eff in summary.get("retrieval_effect", {}).items():
+            u, a = eff["unsupported_when_not_in_record"], eff["accuracy_when_answerable"]
+            print(f"  retrieval − clean {config:8s} unsupported {u['rate']:+.1%} [{u['low']:+.1%}, "
+                  f"{u['high']:+.1%}]  accuracy {a['rate']:+.1%} [{a['low']:+.1%}, {a['high']:+.1%}]")
+        if args.publish:
+            if split != "test":
+                sys.exit(f"Only test runs are published ({run_id} is not).")
+            published["models"][entry["model"]] = summary
+            published["runs"].append(entry)
+
     if args.publish:
-        if split != "test":
-            sys.exit("Only test runs are published.")
-        summary["run"] = entry
-        summary["test_runs_to_date"] = sum(1 for e in log if e["split"] == "test")
+        published["test_runs_to_date"] = sum(1 for e in log if e["split"] == "test")
         out = ROOT / "web" / "results.json"
-        out.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-        rows = [json.loads(line) for line in (run_dir / "graded.jsonl").read_text().splitlines()]
+        out.write_text(json.dumps(published, indent=2) + "\n", encoding="utf-8")
+        first = args.run_ids[0]
+        rows = [json.loads(line) for line in (DATA / "runs" / first / "graded.jsonl").read_text().splitlines()]
         questions = [q for q in read(DATA / "questions" / "questions.jsonl") if q.split == "test"]
-        examples = build_examples(rows, questions, load())
+        examples = build_examples(rows, questions, load(), per_stratum=1)
         (ROOT / "web" / "examples.json").write_text(json.dumps(examples, indent=2) + "\n", encoding="utf-8")
         results_dir = DATA / "results"
         results_dir.mkdir(exist_ok=True)
-        shutil.copy(run_dir / "graded.jsonl", results_dir / f"{args.run_id}.graded.jsonl")
-        print(f"published {out} and {len(examples)} examples")
+        for run_id in args.run_ids:
+            shutil.copy(DATA / "runs" / run_id / "graded.jsonl", results_dir / f"{run_id}.graded.jsonl")
+        print(f"\npublished {out} ({len(published['models'])} models) and {len(examples)} examples")
 
 
 if __name__ == "__main__":

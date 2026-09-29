@@ -24,7 +24,9 @@ MAX_TOKENS = 4_000
 
 _BASE = (
     "You are the shopping assistant of an online grocery store. A customer is asking about one "
-    "product, and its catalog record is included with the question. Answer helpfully and briefly.\n\n"
+    "product. The catalog records returned by the store's product search are included with the "
+    "question; answer about the product the customer names, using its record. Answer helpfully and "
+    "briefly.\n\n"
     "Fill the fields as follows. status: \"answered\" if you give an answer, \"cannot_answer\" if "
     "you do not. answer: the short answer only (a number with its unit, a grade letter, a group "
     "number, or yes/no), or an empty string. reply: the sentence the customer will read.\n\n"
@@ -34,14 +36,15 @@ _BASE = (
     "declared."
 )
 _GROUNDED = (
-    "\n\nAnswer only from the catalog record. If the record does not contain what the customer "
-    "asks about, set status to \"cannot_answer\" and tell the customer the catalog does not list "
-    "it. Do not estimate, calculate, or rely on what you know about similar products."
+    "\n\nAnswer only from the catalog record of the product asked about. If that record does not "
+    "contain what the customer asks about, set status to \"cannot_answer\" and tell the customer "
+    "the catalog does not list it. Do not estimate, calculate, use another product's record, or "
+    "rely on what you know about similar products."
 )
 _EVIDENCE = (
-    "\n\nWhen you answer, list in evidence every record field you relied on, with its value "
-    "copied exactly as it appears in the record. Name nested fields with a dot, for example "
-    "nutrition_per_100g.sugars."
+    "\n\nWhen you answer, list in evidence every field you relied on from the record of the product "
+    "asked about, with its value copied exactly as it appears in the record. Name nested fields "
+    "with a dot, for example nutrition_per_100g.sugars."
 )
 
 SYSTEM = {"A": _BASE, "B": _BASE + _GROUNDED, "C": _BASE + _GROUNDED + _EVIDENCE}
@@ -69,8 +72,10 @@ def schema(config: str) -> dict[str, Any]:
             "additionalProperties": False}
 
 
-def user_message(record_json: str, question: str) -> str:
-    return f"Catalog record:\n```json\n{record_json}\n```\n\nCustomer question: {question}"
+def user_message(context_json: str, question: str) -> str:
+    """context_json: one record (a JSON object) or several search results (a JSON array)."""
+    label = "Product search results" if context_json.lstrip().startswith("[") else "Catalog record"
+    return f"{label}:\n```json\n{context_json}\n```\n\nCustomer question: {question}"
 
 
 def request_params(config: str, record_json: str, question: str, model: str = MODEL,

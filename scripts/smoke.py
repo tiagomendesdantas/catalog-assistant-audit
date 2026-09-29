@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from run_eval import load_dotenv
 
 from catalog_audit.assistant import EFFORT, evidence_holds, parse_message, request_params
-from catalog_audit.catalog import DATA, load, render, render_json
+from catalog_audit.catalog import DATA, load, render, render_context
 from catalog_audit.grading import grade
 from catalog_audit.guard import call_cost_usd
 from catalog_audit.questions import read
@@ -36,13 +36,14 @@ def main() -> None:
     client = openai.OpenAI()
     catalog = load()
     questions = [q for q in read(DATA / "questions" / "questions.jsonl") if q.split == "dev"]
-    picks = {q.stratum: q for q in reversed(questions)}  # first question of each stratum
+    picks = {(q.stratum, q.condition): q for q in reversed(questions)}  # first per stratum and condition
     total = 0.0
     for q in sorted(picks.values(), key=lambda q: q.qid):
         product = catalog[q.code]
         print(f"\n{q.qid}  {q.text}  [expected {q.expected}]")
         for config in "ABC":
-            params = request_params(config, render_json(product), q.text, args.model, args.effort)
+            params = request_params(config, render_context(q.context, catalog), q.text, args.model,
+                                    args.effort)
             reply = parse_message(client.chat.completions.create(**params))
             cost = call_cost_usd(args.model, reply.input_tokens, reply.output_tokens)
             total += cost

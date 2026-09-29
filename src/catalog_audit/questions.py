@@ -105,6 +105,32 @@ class Question:
     weight: float  # 1 / inclusion probability
     stratum_products: int  # M_h in this split
     stratum_pairs: int  # N_h in this split
+    # clean: the target record alone. retrieval: the target plus its two most similar products by
+    # name, in the order listed in `context`, as a search-backed assistant would receive them.
+    condition: str = "clean"
+    context: tuple[str, ...] = ()
+
+
+CONDITIONS = ("clean", "retrieval")
+N_NEIGHBORS = 2
+
+
+def similar_products(products: dict[str, dict[str, Any]]) -> dict[str, list[str]]:
+    """The two products whose names are closest to each product's name (character 3-4-gram TF-IDF,
+    cosine). Products with exactly the same name are skipped: two records for what reads as the
+    same product would make the context ambiguous rather than noisy."""
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.neighbors import NearestNeighbors
+
+    codes = sorted(products)
+    names = [products[c]["product_name"].strip().lower() for c in codes]
+    matrix = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 4), min_df=2).fit_transform(names)
+    _, idx = NearestNeighbors(n_neighbors=12, metric="cosine").fit(matrix).kneighbors(matrix)
+    out: dict[str, list[str]] = {}
+    for i, code in enumerate(codes):
+        picks = [codes[j] for j in idx[i] if j != i and names[j] != names[i]]
+        out[code] = picks[:N_NEIGHBORS]
+    return out
 
 
 def split_of(code: str) -> str:
@@ -173,7 +199,19 @@ def question_text(pair: Pair, name: str, rng: random.Random) -> str:
     return rng.choice(ALLERGEN_TEMPLATES).format(what=pair.attribute, name=name)
 
 
-def build(products: dict[str, dict[str, Any]]) -> tuple[list[Question], dict[str, Any]]:
+def retrieval_context(code: str, neighbors: list[str], key: str) -> tuple[str, ...]:
+    """Target plus neighbors in a shuffled order, seeded by the question id so the target's
+    position varies across questions but never between runs."""
+    context = [code, *neighbors]
+    random.Random(f"{SEED}|{key}|order").shuffle(context)
+    return tuple(context)
+
+
+def build(products: dict[str, dict[str, Any]],
+          neighbors: dict[str, list[str]] | None = None) -> tuple[list[Question], dict[str, Any]]:
+    """Every sampled question is emitted once per condition, so conditions compare question by
+    question. The draw itself does not depend on the conditions."""
+    neighbors = neighbors if neighbors is not None else similar_products(products)
     by_stratum: dict[tuple[str, str], dict[str, list[Pair]]] = defaultdict(lambda: defaultdict(list))
     for code, product in products.items():
         for pair in pairs_for(product):
@@ -195,11 +233,16 @@ def build(products: dict[str, dict[str, Any]]) -> tuple[list[Question], dict[str
             pair = rng.choice(options)
             weight = (m_h / n_h) * len(options)
             text = question_text(pair, products[code]["product_name"], rng)
-            questions.append(Question(
-                qid=f"{split}-{stratum}-{i:03d}", split=split, code=code, stratum=stratum,
-                family=pair.family, attribute=pair.attribute, expected=pair.expected, text=text,
-                weight=weight, stratum_products=m_h, stratum_pairs=n_pairs,
-            ))
+            base = f"{split}-{stratum}-{i:03d}"
+            for condition in CONDITIONS:
+                context = ((code,) if condition == "clean"
+                           else retrieval_context(code, neighbors.get(code, []), base))
+                questions.append(Question(
+                    qid=f"{base}-{condition}", split=split, code=code, stratum=stratum,
+                    family=pair.family, attribute=pair.attribute, expected=pair.expected,
+                    text=text, weight=weight, stratum_products=m_h, stratum_pairs=n_pairs,
+                    condition=condition, context=context,
+                ))
     return questions, frame
 
 
@@ -211,14 +254,22 @@ def write(questions: list[Question], frame: dict[str, Any], out_dir: Path) -> st
             fh.write(json.dumps(asdict(q), ensure_ascii=False, sort_keys=True) + "\n")
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
     manifest = {"seed": SEED, "dev_share": DEV_SHARE, "per_stratum": PER_STRATUM,
+                "conditions": list(CONDITIONS), "neighbors_per_question": N_NEIGHBORS,
+                "neighbor_method": "char 3-4-gram TF-IDF on lowercased names, cosine; "
+                                   "identical names skipped",
                 "frame": frame, "sha256_questions_jsonl": digest}
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     return digest
 
 
 def read(path: Path) -> list[Question]:
+    out = []
     with path.open(encoding="utf-8") as fh:
-        return [Question(**json.loads(line)) for line in fh]
+        for line in fh:
+            data = json.loads(line)
+            data["context"] = tuple(data.get("context") or (data["code"],))
+            out.append(Question(**data))
+    return out
 
 
 if __name__ == "__main__":

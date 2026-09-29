@@ -1,0 +1,1409 @@
+{
+  "configs": {
+    "A": {
+      "model": "gpt-6-luna",
+      "served_by": "gpt-6-luna",
+      "questions": 210,
+      "headline": {
+        "accuracy_when_answerable": {
+          "rate": 1.0,
+          "low": 0.9659257901015588,
+          "high": 1.0,
+          "n": 120
+        },
+        "abstained_when_answerable": {
+          "rate": 0.0,
+          "low": 0.0,
+          "high": 0.034074209898441274,
+          "n": 120
+        },
+        "unsupported_when_not_in_record": {
+          "rate": 0.04048588727241049,
+          "low": 0.0,
+          "high": 0.0884334602193544,
+          "n": 90
+        },
+        "routed_to_review": {
+          "rate": 0.0,
+          "low": 0.0,
+          "high": 0.020194567970266378,
+          "n": 210
+        }
+      },
+      "by_stratum": {
+        "nutrition_present": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.8852812694038136,
+            "high": 1.0,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "score_present": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.879234347840969,
+            "high": 1.0,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "allergen_yes": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.8555467428955533,
+            "high": 0.9999999999999999,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "allergen_no": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.8813420038821062,
+            "high": 0.9999999999999999,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "nutrition_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 1.0,
+            "low": 0.8341278789224026,
+            "high": 0.9999999999999999,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 30,
+            "failed": 0
+          }
+        },
+        "score_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.11538461538461538,
+            "low": 0.0,
+            "high": 0.2396598259438194,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.8846153846153847,
+            "low": 0.7603401740561806,
+            "high": 1.0,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 27,
+            "unsupported": 3,
+            "failed": 0
+          }
+        },
+        "allergen_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.03333333333333333,
+            "low": 0.0,
+            "high": 0.09866546666666667,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.9666666666666668,
+            "low": 0.9013345333333335,
+            "high": 1.0,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 29,
+            "unsupported": 1,
+            "failed": 0
+          }
+        }
+      },
+      "failed": 0,
+      "cost_usd_standard_per_1000": 0.05919047619047619
+    },
+    "B": {
+      "model": "gpt-6-luna",
+      "served_by": "gpt-6-luna",
+      "questions": 210,
+      "headline": {
+        "accuracy_when_answerable": {
+          "rate": 0.9032074484003195,
+          "low": 0.8396000157978715,
+          "high": 0.9668148810027676,
+          "n": 120
+        },
+        "abstained_when_answerable": {
+          "rate": 0.0967925515996805,
+          "low": 0.03318511899723246,
+          "high": 0.16039998420212853,
+          "n": 120
+        },
+        "unsupported_when_not_in_record": {
+          "rate": 0.022338618346545866,
+          "low": 0.0,
+          "high": 0.06612150611551529,
+          "n": 90
+        },
+        "routed_to_review": {
+          "rate": 0.0,
+          "low": 0.0,
+          "high": 0.020194567970266378,
+          "n": 210
+        }
+      },
+      "by_stratum": {
+        "nutrition_present": {
+          "correct": {
+            "rate": 0.943231441048035,
+            "low": 0.8631652059302204,
+            "high": 1.0,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.05676855895196507,
+            "low": 0.0,
+            "high": 0.13683479406977966,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 28,
+            "abstained": 2,
+            "failed": 0
+          }
+        },
+        "score_present": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.879234347840969,
+            "high": 1.0,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "allergen_yes": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.8555467428955533,
+            "high": 0.9999999999999999,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "allergen_no": {
+          "correct": {
+            "rate": 0.686868686868687,
+            "low": 0.5120761778461531,
+            "high": 0.8616611958912208,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.3131313131313132,
+            "low": 0.13833880410877936,
+            "high": 0.48792382215384705,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 21,
+            "abstained": 9,
+            "failed": 0
+          }
+        },
+        "nutrition_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 1.0,
+            "low": 0.8341278789224026,
+            "high": 0.9999999999999999,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 30,
+            "failed": 0
+          }
+        },
+        "score_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 1.0,
+            "low": 0.8799848846025127,
+            "high": 1.0,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 30,
+            "failed": 0
+          }
+        },
+        "allergen_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.03333333333333333,
+            "low": 0.0,
+            "high": 0.09866546666666667,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.9666666666666668,
+            "low": 0.9013345333333335,
+            "high": 1.0,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 29,
+            "unsupported": 1,
+            "failed": 0
+          }
+        }
+      },
+      "failed": 0,
+      "cost_usd_standard_per_1000": 0.061221428571428566,
+      "versus_A": {
+        "accuracy_when_answerable": {
+          "rate": -0.0967925515996805,
+          "low": -0.16039998420212853,
+          "high": -0.03318511899723246,
+          "n": 120
+        },
+        "unsupported_when_not_in_record": {
+          "rate": -0.018147268925864622,
+          "low": -0.03769281803844612,
+          "high": 0.0013982801867168729,
+          "n": 90
+        }
+      }
+    },
+    "C": {
+      "model": "gpt-6-luna",
+      "served_by": "gpt-6-luna",
+      "questions": 210,
+      "headline": {
+        "accuracy_when_answerable": {
+          "rate": 0.9532543851838661,
+          "low": 0.9237303389634975,
+          "high": 0.9827784314042346,
+          "n": 120
+        },
+        "abstained_when_answerable": {
+          "rate": 0.046745614816133915,
+          "low": 0.01722156859576543,
+          "high": 0.0762696610365024,
+          "n": 120
+        },
+        "unsupported_when_not_in_record": {
+          "rate": 0.022338618346545866,
+          "low": 0.0,
+          "high": 0.06612150611551529,
+          "n": 90
+        },
+        "routed_to_review": {
+          "rate": 0.0,
+          "low": 0.0,
+          "high": 0.020194567970266378,
+          "n": 210
+        }
+      },
+      "by_stratum": {
+        "nutrition_present": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.8852812694038136,
+            "high": 1.0,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "score_present": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.879234347840969,
+            "high": 1.0,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "allergen_yes": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.8555467428955533,
+            "high": 0.9999999999999999,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "allergen_no": {
+          "correct": {
+            "rate": 0.7474747474747475,
+            "low": 0.5879824131308522,
+            "high": 0.9069670818186428,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.25252525252525254,
+            "low": 0.09303291818135717,
+            "high": 0.4120175868691479,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 22,
+            "abstained": 8,
+            "failed": 0
+          }
+        },
+        "nutrition_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 1.0,
+            "low": 0.8341278789224026,
+            "high": 0.9999999999999999,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 30,
+            "failed": 0
+          }
+        },
+        "score_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 1.0,
+            "low": 0.8799848846025127,
+            "high": 1.0,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 30,
+            "failed": 0
+          }
+        },
+        "allergen_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.03333333333333333,
+            "low": 0.0,
+            "high": 0.09866546666666667,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.9666666666666668,
+            "low": 0.9013345333333335,
+            "high": 1.0,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 29,
+            "unsupported": 1,
+            "failed": 0
+          }
+        }
+      },
+      "failed": 0,
+      "cost_usd_standard_per_1000": 0.07790000000000001,
+      "versus_A": {
+        "accuracy_when_answerable": {
+          "rate": -0.046745614816133915,
+          "low": -0.0762696610365024,
+          "high": -0.01722156859576543,
+          "n": 120
+        },
+        "unsupported_when_not_in_record": {
+          "rate": -0.018147268925864622,
+          "low": -0.03769281803844612,
+          "high": 0.0013982801867168729,
+          "n": 90
+        }
+      }
+    },
+    "C+check": {
+      "model": "gpt-6-luna",
+      "served_by": "gpt-6-luna",
+      "questions": 210,
+      "headline": {
+        "accuracy_when_answerable": {
+          "rate": 0.9532543851838661,
+          "low": 0.9237303389634975,
+          "high": 0.9827784314042346,
+          "n": 120
+        },
+        "abstained_when_answerable": {
+          "rate": 0.046745614816133915,
+          "low": 0.01722156859576543,
+          "high": 0.0762696610365024,
+          "n": 120
+        },
+        "unsupported_when_not_in_record": {
+          "rate": 0.022338618346545866,
+          "low": 0.0,
+          "high": 0.06612150611551529,
+          "n": 90
+        },
+        "routed_to_review": {
+          "rate": 0.0,
+          "low": 0.0,
+          "high": 0.020194567970266378,
+          "n": 210
+        }
+      },
+      "by_stratum": {
+        "nutrition_present": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.8852812694038136,
+            "high": 1.0,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11471873059618647,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "score_present": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.879234347840969,
+            "high": 1.0,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12076565215903093,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "allergen_yes": {
+          "correct": {
+            "rate": 1.0,
+            "low": 0.8555467428955533,
+            "high": 0.9999999999999999,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.1444532571044465,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 30,
+            "failed": 0
+          }
+        },
+        "allergen_no": {
+          "correct": {
+            "rate": 0.7474747474747475,
+            "low": 0.5879824131308522,
+            "high": 0.9069670818186428,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.25252525252525254,
+            "low": 0.09303291818135717,
+            "high": 0.4120175868691479,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11865799611789377,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "correct": 22,
+            "abstained": 8,
+            "failed": 0
+          }
+        },
+        "nutrition_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 1.0,
+            "low": 0.8341278789224026,
+            "high": 0.9999999999999999,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.16587212107759738,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 30,
+            "failed": 0
+          }
+        },
+        "score_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 1.0,
+            "low": 0.8799848846025127,
+            "high": 1.0,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.12001511539748726,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 30,
+            "failed": 0
+          }
+        },
+        "allergen_missing": {
+          "correct": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "wrong": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "abstained": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "unsupported": {
+            "rate": 0.03333333333333333,
+            "low": 0.0,
+            "high": 0.09866546666666667,
+            "n": 30
+          },
+          "held_back": {
+            "rate": 0.9666666666666668,
+            "low": 0.9013345333333335,
+            "high": 1.0,
+            "n": 30
+          },
+          "routed": {
+            "rate": 0.0,
+            "low": 0.0,
+            "high": 0.11351339476145207,
+            "n": 30
+          },
+          "failed": 0,
+          "counts": {
+            "held_back": 29,
+            "unsupported": 1,
+            "failed": 0
+          }
+        }
+      },
+      "failed": 0,
+      "cost_usd_standard_per_1000": null,
+      "versus_A": {
+        "accuracy_when_answerable": {
+          "rate": -0.046745614816133915,
+          "low": -0.0762696610365024,
+          "high": -0.01722156859576543,
+          "n": 120
+        },
+        "unsupported_when_not_in_record": {
+          "rate": -0.018147268925864622,
+          "low": -0.03769281803844612,
+          "high": 0.0013982801867168729,
+          "n": 90
+        }
+      },
+      "routed_would_have_been": {}
+    }
+  },
+  "population_pairs": {
+    "allergen_missing": 4734,
+    "allergen_no": 1701,
+    "allergen_yes": 422,
+    "nutrition_missing": 1219,
+    "nutrition_present": 6285,
+    "score_missing": 1111,
+    "score_present": 781
+  }
+}

@@ -92,6 +92,20 @@ def test_evidence_fails_when_answer_number_differs_from_the_quote():
     assert not evidence_holds(RECORD, r, "nutrition")
 
 
+def test_retrieval_context_is_a_labelled_array_and_clean_is_one_record():
+    from catalog_audit.assistant import user_message
+    from catalog_audit.catalog import render_context
+
+    other = {**PRODUCT, "code": "456", "product_name": "Oat Crunch Cereal, Honey"}
+    products = {"123": PRODUCT, "456": other}
+    many = render_context(("456", "123"), products)
+    assert json.loads(many)[1]["product_name"] == "Oat Crunch Cereal"
+    assert user_message(many, "q").startswith("Product search results:")
+    one = render_context(("123",), products)
+    assert json.loads(one)["product_name"] == "Oat Crunch Cereal"
+    assert user_message(one, "q").startswith("Catalog record:")
+
+
 def test_derivable_parts_and_named_allergens_are_not_unanswerable():
     from catalog_audit.questions import pairs_for
 
