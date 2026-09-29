@@ -44,6 +44,69 @@ what they change.
   - **C · Grounded + evidence:** B, plus copying the record fields it relied on; reported with and
     without the evidence check.
 
+  The exact instructions of each one are in the next section.
+
+## How the configurations are built
+
+The three configurations are one API request with different instructions. The model, the reasoning
+effort, the product record and the question are the same. B and C each add one paragraph to the
+instructions of the configuration before.
+
+| Configuration | Instructions | Output fields |
+|---|---|---|
+| A · Baseline | Base text | `status`, `answer`, `reply` |
+| B · Grounded | Base text + answer only from the record | `status`, `answer`, `reply` |
+| C · Grounded + evidence | B + copy the fields relied on | `status`, `answer`, `reply`, `evidence` |
+
+The user message is the product record as JSON, followed by the customer's question. Fields that
+are empty in the catalog are left out of the JSON, so "not in the record" means the key is absent.
+
+<details>
+<summary>The exact instructions</summary>
+
+**Base text, used by A, B and C**
+
+> You are the shopping assistant of an online grocery store. A customer is asking about one
+> product. The catalog records returned by the store's product search are included with the
+> question; answer about the product the customer names, using its record. Answer helpfully and
+> briefly.
+>
+> Fill the fields as follows. status: "answered" if you give an answer, "cannot_answer" if you do
+> not. answer: the short answer only (a number with its unit, a grade letter, a group number, or
+> yes/no), or an empty string. reply: the sentence the customer will read.
+>
+> About allergens: allergens_declared lists the allergens declared for the product. When that list
+> is present and the allergen asked about is not in it, the answer is no: it is not declared.
+
+**Added in B and C**
+
+> Answer only from the catalog record of the product asked about. If that record does not contain
+> what the customer asks about, set status to "cannot_answer" and tell the customer the catalog
+> does not list it. Do not estimate, calculate, use another product's record, or rely on what you
+> know about similar products.
+
+**Added in C**
+
+> When you answer, list in evidence every field you relied on from the record of the product asked
+> about, with its value copied exactly as it appears in the record. Name nested fields with a dot,
+> for example nutrition_per_100g.sugars.
+
+Source: [`src/catalog_audit/assistant.py`](src/catalog_audit/assistant.py). A test keeps this text
+equal to the code.
+
+</details>
+
+**The baseline is a strong one.** It is not a chatbot answering from memory:
+
+- It has the product record in context.
+- Its output format allows two statuses, and one of them is `cannot_answer`, so declining is
+  always available.
+- It carries the allergen rule, which was added to the base text during development and is shared
+  by all three configurations.
+
+The comparison between A and B therefore measures one thing: the explicit rule to answer only from
+the record.
+
 ## Results
 
 Test split: 840 questions per model and condition, 360 of them about something the record does
@@ -99,6 +162,8 @@ response were re-sent unchanged and merged, and that is logged too.
 
 - Ground truth is the catalog record, not the physical product. An answer that is true of the real
   product counts as invented if the record does not state it.
+- The baseline already has the record in context and can decline through its output format, so its
+  rates say nothing about an assistant that answers from memory. That case was not tested.
 - "Similar products" are the nearest names in this 5,000-product sample, not the output of a
   production search engine, which may return closer or looser matches.
 - Questions follow fixed English templates; real customers phrase things more loosely.
