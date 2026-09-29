@@ -46,6 +46,24 @@ Hájek estimator within stratum with weights 1/π, linearised variance, strata c
 pair counts; paired differences against A on the same questions. 95% intervals. Details in
 `src/catalog_audit/estimate.py`, with a coverage test in `tests/`.
 
+## Models
+
+gpt-6.1-sol (the demo's assistant) and gpt-6-luna (a cheaper comparison), both at
+`reasoning_effort="low"`, through the Chat Completions and Batch APIs. Prices in
+`src/catalog_audit/guard.py`, from the provider's pricing page on 2026-09-29.
+
+## Changes made on development questions
+
+Recorded here so the reader can see what was tuned before the test run.
+
+- **Round 0 (live smoke test, 7 development questions per model).**
+  - The evidence check rejected a correct quote because the model copied a list field as JSON
+    (`["eggs", "milk", "soybeans"]`) rather than comma-separated. The check now accepts a list, or
+    any subset of its items, in either form. A checker bug, not a model error.
+  - With the grounded prompt, "fish is not in the declared allergen list" was read as "the record
+    does not say". A sentence defining undeclared allergens was added to the base prompt, so all
+    three configurations receive it and the comparison stays like for like.
+
 ## Rules for the test split
 
 - Prompts are adjusted only on development questions.

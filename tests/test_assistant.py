@@ -92,6 +92,22 @@ def test_evidence_fails_when_answer_number_differs_from_the_quote():
     assert not evidence_holds(RECORD, r, "nutrition")
 
 
+def test_list_quotes_in_json_or_plain_form_and_subsets():
+    record = {**RECORD, "allergens_declared": ["eggs", "milk", "soybeans"]}
+    for quote in ['["eggs", "milk", "soybeans"]', "eggs, milk, soybeans", "milk", '["milk"]']:
+        r = reply(answer="yes", evidence=[{"field": "allergens_declared", "value": quote}])
+        assert evidence_holds(record, r, "allergen"), quote
+    for quote in ['["milk", "fish"]', "fish", "[]"]:
+        r = reply(answer="yes", evidence=[{"field": "allergens_declared", "value": quote}])
+        assert not evidence_holds(record, r, "allergen"), quote
+
+
+def test_base_prompt_defines_undeclared_allergens_for_every_configuration():
+    for config in "ABC":
+        system = request_params(config, "{}", "q", TEST_MODEL, "low")["messages"][0]["content"]
+        assert "the answer is no: it is not declared" in system
+
+
 def test_evidence_list_fields_and_cannot_answer():
     r = reply(answer="yes", evidence=[{"field": "allergens_declared", "value": "gluten"}])
     assert evidence_holds(RECORD, r, "allergen")

@@ -18,7 +18,12 @@ from dataclasses import dataclass
 # provider's pricing page on the date noted; a model missing from this table has no known cost,
 # so the live endpoint refuses to call it and cost reports show it as unknown.
 # Reasoning tokens are billed as output and are included in completion_tokens.
-PRICES_PER_MTOK: dict[str, tuple[float, float]] = {}
+PRICES_PER_MTOK: dict[str, tuple[float, float]] = {
+    # https://developers.openai.com/api/docs/pricing, checked 2026-09-29, prompts under 272K tokens.
+    # Batch prices are 50% of these.
+    "gpt-6.1-sol": (2.00, 10.00),
+    "gpt-6-luna": (0.10, 0.50),
+}
 
 
 class UnknownPrice(KeyError):

@@ -27,7 +27,11 @@ _BASE = (
     "product, and its catalog record is included with the question. Answer helpfully and briefly.\n\n"
     "Fill the fields as follows. status: \"answered\" if you give an answer, \"cannot_answer\" if "
     "you do not. answer: the short answer only (a number with its unit, a grade letter, a group "
-    "number, or yes/no), or an empty string. reply: the sentence the customer will read."
+    "number, or yes/no), or an empty string. reply: the sentence the customer will read.\n\n"
+    # Added after development round 0: without it, "not in the list" read as "not in the record".
+    "About allergens: allergens_declared lists the allergens declared for the product. When that "
+    "list is present and the allergen asked about is not in it, the answer is no: it is not "
+    "declared."
 )
 _GROUNDED = (
     "\n\nAnswer only from the catalog record. If the record does not contain what the customer "
@@ -138,6 +142,28 @@ def _lookup(record: dict[str, Any], field: str) -> Any:
     return node
 
 
+def _list_items(quoted: str) -> list[str]:
+    """Items of a quoted list, whether written as JSON (["a", "b"]) or as plain text (a, b)."""
+    try:
+        parsed = json.loads(quoted)
+    except json.JSONDecodeError:
+        parsed = None
+    if isinstance(parsed, list):
+        return [_norm(x) for x in parsed]
+    return [_norm(x).strip("\"'") for x in quoted.strip("[]").split(",") if x.strip()]
+
+
+def _quote_matches(quoted: str, value: Any) -> bool:
+    """A quote holds when it is copied from the field. A list field accepts any subset of its
+    items, in JSON or comma-separated form (round 0 showed models quote lists both ways)."""
+    if isinstance(value, list):
+        items = {_norm(v) for v in value}
+        return bool(_list_items(quoted)) and all(i in items for i in _list_items(quoted))
+    if isinstance(value, dict):
+        value = ", ".join(f"{k}: {v}" for k, v in value.items())
+    return quoted.strip("\"'") in _norm(value)
+
+
 def evidence_holds(record: dict[str, Any], reply: Reply, family: str | None = None) -> bool:
     """True when every cited field exists and its quoted value appears in the record.
 
@@ -155,10 +181,7 @@ def evidence_holds(record: dict[str, Any], reply: Reply, family: str | None = No
         if value is None:
             return False
         quoted = _norm(item.get("value", ""))
-        if not quoted:
-            return False
-        haystack = _norm(", ".join(map(str, value)) if isinstance(value, list) else value)
-        if quoted not in haystack:
+        if not quoted or not _quote_matches(quoted, value):
             return False
         quoted_numbers.update(float(n) for n in re.findall(r"-?\d+(?:\.\d+)?", quoted))
     if family == "nutrition":
