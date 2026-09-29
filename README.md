@@ -1,11 +1,23 @@
 # Catalog assistant audit
 
+**LLM evaluation · RAG grounding and citation checks · deployed on Railway**
+
+[![ci](https://github.com/tiagomendesdantas/catalog-assistant-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/tiagomendesdantas/catalog-assistant-audit/actions/workflows/ci.yml)
+
 How often does a grocery product assistant answer a question its catalog record cannot answer?
 This project measures it on 5,000 real products, for three versions of the same assistant, and
 serves the grounded version as a demo that shows its evidence.
 
 **Live demo:** [web-production-78cffc.up.railway.app](https://web-production-78cffc.up.railway.app) ·
 **Results page:** [/audit](https://web-production-78cffc.up.railway.app/audit)
+
+## What this project covers
+
+| Area | What is in the repo | Where to look |
+|---|---|---|
+| **LLM evaluation** | Two OpenAI models and three prompt configurations, compared on 1,680 test questions per model. The right answers come from the catalog, grading is deterministic, and every rate has a 95% interval. Prompts were tuned on development questions only, and the test split was run once per model. | [`docs/EVAL_PLAN.md`](docs/EVAL_PLAN.md), [`questions.py`](src/catalog_audit/questions.py), [`grading.py`](src/catalog_audit/grading.py), [`estimate.py`](src/catalog_audit/estimate.py) |
+| **RAG** | The answering half of a retrieval-augmented system. The assistant answers only from the records in its context and cites the fields it used, and a check compares each citation with the record. Every question is also asked with two lookalike products in context, the way a search step returns them. Retrieval quality is not measured: the right record is always in context. | [`assistant.py`](src/catalog_audit/assistant.py), [`questions.py`](src/catalog_audit/questions.py) |
+| **Deployment** | A FastAPI service in Docker, running on Railway. CI runs lint, tests, the image build and a secret scan. Live model calls are limited per visitor and by a daily budget. | [`app.py`](src/catalog_audit/app.py), [`guard.py`](src/catalog_audit/guard.py), [`Dockerfile`](Dockerfile), [`ci.yml`](.github/workflows/ci.yml) |
 
 ## The problem
 
