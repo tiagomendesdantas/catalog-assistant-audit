@@ -62,6 +62,21 @@ def test_stratified_interval_covers_known_rate():
     assert 0.92 <= hits / reps <= 0.98
 
 
+def test_one_event_pooled_with_empty_strata_is_not_precise():
+    """A single event in one stratum, none in two others: the interval must reflect three strata of
+    limited size, not only the stratum where the event happened."""
+    groups = {
+        "a": ([1.0] + [0.0] * 29, [1.0] * 30),
+        "b": ([0.0] * 30, [1.0] * 30),
+        "c": ([0.0] * 30, [1.0] * 30),
+    }
+    est = stratified(groups, {"a": 1000, "b": 1000, "c": 1000})
+    assert est.rate == pytest.approx(1 / 90)
+    assert est.high > 0.04  # 1 event in 90 questions cannot be pinned below 4%
+    empty = stratified({"b": groups["b"], "c": groups["c"]}, {"b": 1000, "c": 1000})
+    assert empty.rate == 0.0 and empty.high > 0.05
+
+
 def test_all_zero_differences_do_not_report_certainty():
     est = stratified({"a": ([0.0] * 120, [1.0] * 120)}, {"a": 1000}, bounded=False)
     assert est.rate == 0.0

@@ -81,6 +81,20 @@ Recorded here so the reader can see what was tuned before the test run.
   question bank was regenerated and frozen again; the development/test split is unchanged, and the
   test split has not been used.
 
+- **Round 2 (420 development questions, both conditions, both models). Last tuning round.**
+  - Prompts were adjusted so the same wording serves one record or several search results.
+  - gpt-6.1-sol: 100% correct on answerable questions in every configuration and condition; the
+    similar products changed nothing; the baseline invented 2 of 90 answers, B and C none.
+  - gpt-6-luna: B and C again declined 7–8 of 30 answerable "not declared" allergen questions, as in
+    round 1, so this is reported as a finding rather than tuned away. With similar products in
+    context a few wrong or unsupported answers matched another product's value; the evidence check
+    routed one of them to review.
+  - Statistics fix: a stratum whose sampled outcomes are all identical now contributes the variance
+    implied by its Wilson interval, instead of zero. Without it, one event pooled with two
+    event-free strata was reported as "0.1% (0.0–0.4%)" on 90 questions.
+
+**Prompts, grading rules and question bank are frozen from here.** The next run is the test run.
+
 ## Rules for the test split
 
 - Prompts are adjusted only on development questions.

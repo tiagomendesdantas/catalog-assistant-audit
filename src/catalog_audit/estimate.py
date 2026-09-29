@@ -13,9 +13,11 @@ Comparisons between two configurations use the same questions, so the difference
 the paired indicator d_i = y_i(A) - y_i(B), which removes the question-to-question variation that
 both share.
 
-When every sampled question has the same outcome, the linearised variance is zero, which would
-report a false certainty; in that case the interval falls back to the Wilson score interval on the
-effective sample size.
+When every sampled question in a stratum has the same outcome, its linearised variance is zero,
+which would report a false certainty, and pooled over strata it would make a single event look
+precisely measured. Such a stratum instead contributes the variance implied by its Wilson score
+interval on the effective sample size: ((upper - p) / 1.96)^2 for a rate at 0, and the same bound
+on the share of discordant questions for a difference. This is conservative for rare events.
 """
 
 from __future__ import annotations
@@ -61,26 +63,30 @@ def hajek(y: Sequence[float], w: Sequence[float]) -> tuple[float, float, float]:
     return p, var, n_eff
 
 
+def _floor_variance(p: float, n_eff: float, bounded: bool) -> float:
+    """Variance for a stratum whose sampled outcomes are all identical (see the module docstring).
+    For a rate, the distance to the far Wilson limit; for a difference (all zeros), the Wilson
+    upper limit for 0 discordant questions."""
+    if bounded:
+        low, high = wilson(min(max(p, 0.0), 1.0), n_eff)
+        return (max(high - p, p - low) / Z) ** 2
+    _, upper = wilson(0.0, n_eff)
+    return (upper / Z) ** 2
+
+
 def stratified(groups: dict[str, tuple[Sequence[float], Sequence[float]]],
                population: dict[str, int], bounded: bool = True) -> Estimate:
     """groups: stratum -> (y, w). population: stratum -> N_h (eligible pairs)."""
     total = sum(population[h] for h in groups)
-    rate, var, n, n_eff = 0.0, 0.0, 0, 0.0
+    rate, var, n = 0.0, 0.0, 0
     for h, (y, w) in groups.items():
         p_h, v_h, ne_h = hajek(y, w)
         share = population[h] / total
         rate += share * p_h
-        var += share**2 * (0.0 if math.isnan(v_h) else v_h)
+        if math.isnan(v_h) or v_h == 0.0:
+            v_h = _floor_variance(p_h, ne_h, bounded)
+        var += share**2 * v_h
         n += len(y)
-        n_eff += ne_h
-    if var == 0.0:
-        if bounded:
-            low, high = wilson(rate, n_eff)
-            return Estimate(rate, low, high, n)
-        # A difference with no discordant question at all: bound the share of questions that could
-        # still disagree by the Wilson upper limit for 0 of n_eff, on both sides.
-        _, upper = wilson(0.0, n_eff)
-        return Estimate(rate, rate - upper, rate + upper, n)
     half = Z * math.sqrt(var)
     low, high = rate - half, rate + half
     if bounded:
