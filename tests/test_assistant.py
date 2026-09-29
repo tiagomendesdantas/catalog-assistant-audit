@@ -92,6 +92,20 @@ def test_evidence_fails_when_answer_number_differs_from_the_quote():
     assert not evidence_holds(RECORD, r, "nutrition")
 
 
+def test_derivable_parts_and_named_allergens_are_not_unanswerable():
+    from catalog_audit.questions import pairs_for
+
+    zero_fat = {**PRODUCT, "allergens_tags": [], "traces_tags": [], "ingredients_text": None,
+                "product_name": "Salted Peanuts",
+                "nutrition_100g": {"fat": {"value": 0, "unit": "g"},
+                                   "carbohydrates": {"value": 5, "unit": "g"}}}
+    missing = {p.attribute for p in pairs_for(zero_fat) if p.stratum.endswith("_missing")}
+    assert "saturated-fat" not in missing  # 0 g fat settles saturated fat
+    assert "sugars" in missing  # carbohydrates are 5 g, so sugars stay unknown
+    assert "peanuts" not in missing  # the name settles it
+    assert "milk" in missing
+
+
 def test_list_quotes_in_json_or_plain_form_and_subsets():
     record = {**RECORD, "allergens_declared": ["eggs", "milk", "soybeans"]}
     for quote in ['["eggs", "milk", "soybeans"]', "eggs, milk, soybeans", "milk", '["milk"]']:

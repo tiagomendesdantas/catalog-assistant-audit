@@ -117,6 +117,16 @@ def _mentions(text: str, words: list[str]) -> bool:
     return any(w in text for w in words)
 
 
+# A part can never exceed its whole, so a missing part is known to be 0 when its whole is 0 g.
+# Asking about it would label a valid deduction as unsupported (found in development round 1).
+PART_OF = {"saturated-fat": "fat", "sugars": "carbohydrates", "fiber": "carbohydrates"}
+
+
+def _derivable(key: str, nutrition: dict[str, Any]) -> bool:
+    whole = PART_OF.get(key)
+    return bool(whole) and whole in nutrition and nutrition[whole]["value"] == 0
+
+
 def pairs_for(product: dict[str, Any]) -> list[Pair]:
     code = product["code"]
     out: list[Pair] = []
@@ -126,7 +136,7 @@ def pairs_for(product: dict[str, Any]) -> list[Pair]:
             value = nutrition[key]["value"]
             if plausible(key, value):  # impossible values are catalog errors; never asked about
                 out.append(Pair(code, "nutrition_present", "nutrition", key, f"{value:g}"))
-        else:
+        elif not _derivable(key, nutrition):
             out.append(Pair(code, "nutrition_missing", "nutrition", key, "CANNOT_ANSWER"))
 
     grade = product.get("nutriscore_grade")
@@ -146,7 +156,9 @@ def pairs_for(product: dict[str, Any]) -> list[Pair]:
             out.append(Pair(code, "allergen_yes", "allergen", name, "yes"))
         elif declared and tag not in traces and not _mentions(context, words):
             out.append(Pair(code, "allergen_no", "allergen", name, "no"))
-        elif not any_allergen_info and not ingredients.strip():
+        elif (not any_allergen_info and not ingredients.strip()
+              and not _mentions(product.get("product_name", ""), words)):
+            # The product name is part of the record: "Peanut Butter" settles peanuts.
             out.append(Pair(code, "allergen_missing", "allergen", name, "CANNOT_ANSWER"))
     return out
 
