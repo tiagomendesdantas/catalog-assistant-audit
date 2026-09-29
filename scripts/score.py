@@ -30,7 +30,11 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("run_ids", nargs="+")
     ap.add_argument("--publish", action="store_true")
+    ap.add_argument("--preview-dir", type=Path,
+                    help="write a preview from development runs here instead of web/ (for layout checks)")
     args = ap.parse_args()
+    if args.preview_dir and args.preview_dir.resolve().is_relative_to(ROOT):
+        sys.exit("The preview directory must be outside the repository.")
     log = [json.loads(line) for line in (DATA / "runs" / "log.jsonl").read_text().splitlines()]
     published: dict = {"models": {}, "runs": []}
     for run_id in args.run_ids:
@@ -51,26 +55,29 @@ def main() -> None:
             u, a = eff["unsupported_when_not_in_record"], eff["accuracy_when_answerable"]
             print(f"  retrieval − clean {config:8s} unsupported {u['rate']:+.1%} [{u['low']:+.1%}, "
                   f"{u['high']:+.1%}]  accuracy {a['rate']:+.1%} [{a['low']:+.1%}, {a['high']:+.1%}]")
-        if args.publish:
-            if split != "test":
+        if args.publish or args.preview_dir:
+            if args.publish and split != "test":
                 sys.exit(f"Only test runs are published ({run_id} is not).")
             published["models"][entry["model"]] = summary
             published["runs"].append(entry)
 
-    if args.publish:
+    if args.publish or args.preview_dir:
+        split = "test" if args.publish else "dev"
         published["test_runs_to_date"] = sum(1 for e in log if e["split"] == "test")
-        out = ROOT / "web" / "results.json"
-        out.write_text(json.dumps(published, indent=2) + "\n", encoding="utf-8")
+        out_dir = ROOT / "web" if args.publish else args.preview_dir
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "results.json").write_text(json.dumps(published, indent=2) + "\n", encoding="utf-8")
         first = args.run_ids[0]
         rows = [json.loads(line) for line in (DATA / "runs" / first / "graded.jsonl").read_text().splitlines()]
-        questions = [q for q in read(DATA / "questions" / "questions.jsonl") if q.split == "test"]
+        questions = [q for q in read(DATA / "questions" / "questions.jsonl") if q.split == split]
         examples = build_examples(rows, questions, load(), per_stratum=1)
-        (ROOT / "web" / "examples.json").write_text(json.dumps(examples, indent=2) + "\n", encoding="utf-8")
-        results_dir = DATA / "results"
-        results_dir.mkdir(exist_ok=True)
-        for run_id in args.run_ids:
-            shutil.copy(DATA / "runs" / run_id / "graded.jsonl", results_dir / f"{run_id}.graded.jsonl")
-        print(f"\npublished {out} ({len(published['models'])} models) and {len(examples)} examples")
+        (out_dir / "examples.json").write_text(json.dumps(examples, indent=2) + "\n", encoding="utf-8")
+        if args.publish:
+            results_dir = DATA / "results"
+            results_dir.mkdir(exist_ok=True)
+            for run_id in args.run_ids:
+                shutil.copy(DATA / "runs" / run_id / "graded.jsonl", results_dir / f"{run_id}.graded.jsonl")
+        print(f"\nwrote {out_dir}/results.json ({len(published['models'])} models) and {len(examples)} examples")
 
 
 if __name__ == "__main__":

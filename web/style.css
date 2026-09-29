@@ -93,6 +93,10 @@ button.ghost { background: transparent; color: var(--ink); border-color: var(--a
 button:disabled { opacity: 0.5; cursor: default; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
 .chips button { padding: 5px 12px; font-size: 14px; }
+.chips button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.filters { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 8px; }
+.filters .chips { margin: 0; }
+.card h3 { margin-top: 0; }
 .row { display: flex; gap: 8px; align-items: center; }
 .row input { flex: 1; }
 

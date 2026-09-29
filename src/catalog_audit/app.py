@@ -98,8 +98,12 @@ def product(code: str) -> dict[str, Any]:
 
 
 def _static_json(name: str, pending: Any) -> Any:
-    """Published results, or `pending` before the test run is published (not an error)."""
-    path = WEB / name
+    """Published results, or `pending` before the test run is published (not an error).
+
+    RESULTS_DIR points at another directory for local previews built from development runs, so a
+    preview file can never sit in web/ where it would be committed or deployed.
+    """
+    path = Path(os.getenv("RESULTS_DIR", WEB)) / name
     if not path.exists():
         return pending
     return json.loads(path.read_text(encoding="utf-8"))

@@ -143,7 +143,10 @@ async function examples() {
   box.replaceChildren();
   for (const ex of items) {
     const card = el("div", { class: "card" });
-    card.append(el("p", { class: "small muted" }, ex.product_name));
+    const context = ex.condition === "retrieval"
+      ? `With similar products in context: ${ex.also_in_context.join("; ")}`
+      : "Exact record only";
+    card.append(el("p", { class: "small muted" }, `${ex.product_name} · ${context}`));
     card.append(el("h3", {}, ex.question));
     card.append(el("p", { class: "small" }, `The record says: ${ex.record_says}`));
     const table = el("table");
@@ -154,6 +157,7 @@ async function examples() {
       tr.append(el("th", {}, CONFIG_NAMES[cfg]));
       const td = el("td");
       td.append(badge(a.outcome));
+      if (a.matches_neighbor) td.append(el("span", { class: "small muted" }, " · matches another product's record"));
       if (a.reply && cfg !== "C+check") td.append(el("div", { class: "small" }, a.reply));
       tr.append(td);
       table.append(tr);

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Catalog assistant audit · results</title>
-  <meta name="description" content="Measured rates, with 95% intervals, at which three product-assistant configurations answer when the catalog has no answer.">
+  <meta name="description" content="Measured rates, with 95% intervals, at which a grocery product assistant answers when the catalog has no answer, with the exact record and with similar products in context.">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -25,6 +25,11 @@
   </div>
 
   <div id="report" hidden>
+    <div class="filters" role="group" aria-label="Model">
+      <span class="small muted">Model</span>
+      <div id="modelSwitch" class="chips"></div>
+    </div>
+
     <section class="card">
       <p class="small muted" id="heroLabel"></p>
       <p class="hero" id="hero"></p>
@@ -32,25 +37,37 @@
     </section>
 
     <h2>Answered although the record had no answer</h2>
-    <p class="small">Questions about a nutrient, grade or allergen the product record does not list. Lower is better.
-      Dots are estimates, lines are 95% intervals.</p>
-    <div class="card"><svg class="chart" id="chartUnsupported" role="img"></svg></div>
+    <p class="small">Questions about a nutrient, grade or allergen the product's record does not list. Lower is
+      better. Left: the assistant gets the exact record. Right: it gets the record plus the two products whose names
+      are most similar, as a store's search would return them. Dots are estimates, lines are 95% intervals.</p>
+    <div class="grid-2">
+      <div class="card"><h3>Exact record</h3><svg class="chart" id="chartUnsupported-clean" role="img"></svg></div>
+      <div class="card"><h3>With similar products</h3><svg class="chart" id="chartUnsupported-retrieval" role="img"></svg></div>
+    </div>
     <div class="table-scroll"><table id="tableUnsupported"></table></div>
 
     <h2>Correct when the record had the answer</h2>
     <p class="small">Questions the record answers directly. Higher is better. Declining, a wrong value, and review
       routing all count as not correct.</p>
-    <div class="card"><svg class="chart" id="chartAccuracy" role="img"></svg></div>
+    <div class="grid-2">
+      <div class="card"><h3>Exact record</h3><svg class="chart" id="chartAccuracy-clean" role="img"></svg></div>
+      <div class="card"><h3>With similar products</h3><svg class="chart" id="chartAccuracy-retrieval" role="img"></svg></div>
+    </div>
     <div class="table-scroll"><table id="tableAccuracy"></table></div>
 
+    <h2>What similar products in the context change</h2>
+    <p class="small">The same questions, asked with and without the two similar products, so each difference is
+      estimated question by question. The last column counts wrong or unsupported answers whose value matches what
+      another product in the context lists; for yes/no allergen answers a match can be coincidence.</p>
+    <div class="table-scroll"><table id="tableEffect"></table></div>
+
     <h2>Difference from the baseline</h2>
-    <p class="small">Each configuration answered the same questions as A, so differences are estimated question by
-      question, which gives tighter intervals than comparing the two rates separately.</p>
+    <p class="small">Each configuration answered the same questions as A, in the same condition.</p>
     <div class="table-scroll"><table id="tableDiff"></table></div>
 
     <h2>By question type</h2>
-    <p class="small">For answerable strata the cell shows the share answered correctly; for strata the record cannot
-      answer it shows the share answered anyway.</p>
+    <p class="small">For answerable types the cell shows the share answered correctly; for types the record cannot
+      answer, the share answered anyway. Exact record / with similar products.</p>
     <div class="table-scroll"><table id="tableStrata"></table></div>
 
     <h2>What the evidence check caught</h2>
@@ -67,14 +84,14 @@
       <li>Ground truth is the catalog record, not the physical product. A value can be wrong in the catalog and still
         count as correct here, and an answer that is true of the real product counts as unsupported if the record does
         not state it.</li>
-      <li>The assistant is given the right product record. Retrieval mistakes, such as picking the wrong product, are
-        not measured.</li>
+      <li>"Similar products" are the nearest names in this 5,000-product sample, not the output of a production search
+        engine. A real search may return closer or looser matches.</li>
       <li>Questions follow fixed templates in English. Real customers phrase questions more loosely, which is likely to
         be harder.</li>
       <li>Allergen questions exclude cases the record cannot settle, such as an empty allergen list next to an
         ingredient list. Those are common in practice and deserve their own study.</li>
-      <li>One model, one date, one sample. The rates describe this catalog and this configuration, not assistants in
-        general.</li>
+      <li>Two models, one date, one sample. The rates describe this catalog and these configurations, not assistants
+        in general.</li>
     </ul>
 
     <h2>How many questions would your own audit need?</h2>
