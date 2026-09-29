@@ -83,6 +83,18 @@ in `data/runs/log.jsonl`; the test split was run once per model. The gpt-6-luna 
 by an account billing error after 3,802 of 5,040 requests; the 1,238 requests that never got a
 response were re-sent unchanged and merged, and that is logged too.
 
+### Limitations
+
+- Ground truth is the catalog record, not the physical product. An answer that is true of the real
+  product counts as invented if the record does not state it.
+- "Similar products" are the nearest names in this 5,000-product sample, not the output of a
+  production search engine, which may return closer or looser matches.
+- Questions follow fixed English templates; real customers phrase things more loosely.
+- Allergen questions leave out cases the record cannot settle, such as an empty allergen list next to
+  an ingredient list. Those are common and deserve their own study.
+- Two models, one date, one sample of one catalog. The rates describe these configurations here, not
+  product assistants in general.
+
 ## How the numbers are produced
 
 - **Catalog.** A simple random sample of 5,000 products sold in the US, from a pinned revision of
