@@ -1,0 +1,23 @@
+{
+  "source": "Open Food Facts, openfoodfacts/product-database on Hugging Face (food.parquet)",
+  "revision": "55d0b529729e80e9e4bd1159e64ee755eb108c6b",
+  "license": "Open Database License (ODbL) 1.0; contents under the Database Contents License",
+  "population": "countries_tags contains en:united-states, English product name, not obsolete",
+  "population_count": 943692,
+  "sample_size": 5000,
+  "sampling": "simple random sample without replacement: the 5,000 eligible codes with the smallest md5(code + 'catalog-assistant-audit-2026-09-29')",
+  "nutrients_per_100g": [
+    "energy-kcal",
+    "fat",
+    "saturated-fat",
+    "carbohydrates",
+    "sugars",
+    "fiber",
+    "proteins",
+    "salt"
+  ],
+  "cleaning": "ingredient lists equal to ['n/a', 'none', 'null', 'undefined'] stored as missing (180 products)",
+  "sha256_products_jsonl": "be90dddbfc1ae45feec34e3957c9d596724b75b2c4545f735f0defb556d1e968",
+  "source_sha256": "b82555077fe2cd6fdfdf7509cb1b2a773d23293662908b768eb92752f53f6fb4",
+  "built_at": "2026-09-29T17:43:42Z"
+}

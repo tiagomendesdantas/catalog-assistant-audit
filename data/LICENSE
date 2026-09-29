@@ -1,0 +1,16 @@
+The data in this directory is derived from the Open Food Facts database.
+
+Contains data from Open Food Facts (https://openfoodfacts.org), available under the
+Open Database License (ODbL) 1.0: https://opendatacommons.org/licenses/odbl/1-0/
+Individual contents of the database are available under the Database Contents License (DbCL) 1.0:
+https://opendatacommons.org/licenses/dbcl/1-0/
+
+This directory, including the product extract (catalog/), the question bank (questions/) and
+the graded results (results/, runs/), is a Derivative Database of Open Food Facts and is made
+available under the Open Database License 1.0. The method used to produce it is the script
+scripts/build_snapshot.py (extract) and src/catalog_audit/questions.py (question bank).
+
+Changes from the source: a random sample of 5,000 products; only the fields listed in
+catalog/manifest.json; per-100 g nutrition values only; product images excluded.
+
+The source code of this repository is licensed separately, under the MIT license (../LICENSE).

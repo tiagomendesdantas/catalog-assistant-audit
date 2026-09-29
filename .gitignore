@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Secrets and local config
+.env
+.env.*
+*.pem
+
+# Raw downloads (the pinned extract is rebuilt by scripts/build_snapshot.py)
+data/raw/
+data/runs/*.partial.jsonl
+
+# Assistant and workflow files stay local
+.claude/
+.gstack/
+tasks/
+CLAUDE.md
+
+.DS_Store

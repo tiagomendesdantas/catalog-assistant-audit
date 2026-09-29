@@ -1,0 +1,81 @@
+{
+  "seed": "catalog-assistant-audit-questions-2026-09-29",
+  "dev_share": 0.2,
+  "per_stratum": {
+    "dev": 30,
+    "test": 120
+  },
+  "frame": {
+    "dev/allergen_missing": {
+      "products": 526,
+      "pairs": 4734,
+      "sampled": 30
+    },
+    "dev/allergen_no": {
+      "products": 250,
+      "pairs": 1701,
+      "sampled": 30
+    },
+    "dev/allergen_yes": {
+      "products": 225,
+      "pairs": 422,
+      "sampled": 30
+    },
+    "dev/nutrition_missing": {
+      "products": 327,
+      "pairs": 1219,
+      "sampled": 30
+    },
+    "dev/nutrition_present": {
+      "products": 844,
+      "pairs": 6285,
+      "sampled": 30
+    },
+    "dev/score_missing": {
+      "products": 628,
+      "pairs": 1111,
+      "sampled": 30
+    },
+    "dev/score_present": {
+      "products": 463,
+      "pairs": 781,
+      "sampled": 30
+    },
+    "test/allergen_missing": {
+      "products": 2232,
+      "pairs": 20088,
+      "sampled": 120
+    },
+    "test/allergen_no": {
+      "products": 1105,
+      "pairs": 7545,
+      "sampled": 120
+    },
+    "test/allergen_yes": {
+      "products": 970,
+      "pairs": 1891,
+      "sampled": 120
+    },
+    "test/nutrition_missing": {
+      "products": 1526,
+      "pairs": 5758,
+      "sampled": 120
+    },
+    "test/nutrition_present": {
+      "products": 3586,
+      "pairs": 26466,
+      "sampled": 120
+    },
+    "test/score_missing": {
+      "products": 2691,
+      "pairs": 4747,
+      "sampled": 120
+    },
+    "test/score_present": {
+      "products": 1998,
+      "pairs": 3361,
+      "sampled": 120
+    }
+  },
+  "sha256_questions_jsonl": "7764e1327454c90eb8e21936859a6b56936509c170a60e212b9e8d7ce69fc737"
+}

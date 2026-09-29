@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalog assistant audit · results</title>
+  <meta name="description" content="Measured rates, with 95% intervals, at which three product-assistant configurations answer when the catalog has no answer.">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <h1>Catalog assistant audit</h1>
+    <nav>
+      <a href="/">Demo</a>
+      <a href="/audit" aria-current="page">Audit results</a>
+      <a href="https://github.com/tiagomendesdantas/catalog-assistant-audit">Code</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="pending" hidden>
+    <p class="lede">Results appear here once the test run is published.</p>
+  </div>
+
+  <div id="report" hidden>
+    <section class="card">
+      <p class="small muted" id="heroLabel"></p>
+      <p class="hero" id="hero"></p>
+      <p id="heroText"></p>
+    </section>
+
+    <h2>Answered although the record had no answer</h2>
+    <p class="small">Questions about a nutrient, grade or allergen the product record does not list. Lower is better.
+      Dots are estimates, lines are 95% intervals.</p>
+    <div class="card"><svg class="chart" id="chartUnsupported" role="img"></svg></div>
+    <div class="table-scroll"><table id="tableUnsupported"></table></div>
+
+    <h2>Correct when the record had the answer</h2>
+    <p class="small">Questions the record answers directly. Higher is better. Declining, a wrong value, and review
+      routing all count as not correct.</p>
+    <div class="card"><svg class="chart" id="chartAccuracy" role="img"></svg></div>
+    <div class="table-scroll"><table id="tableAccuracy"></table></div>
+
+    <h2>Difference from the baseline</h2>
+    <p class="small">Each configuration answered the same questions as A, so differences are estimated question by
+      question, which gives tighter intervals than comparing the two rates separately.</p>
+    <div class="table-scroll"><table id="tableDiff"></table></div>
+
+    <h2>By question type</h2>
+    <p class="small">For answerable strata the cell shows the share answered correctly; for strata the record cannot
+      answer it shows the share answered anyway.</p>
+    <div class="table-scroll"><table id="tableStrata"></table></div>
+
+    <h2>What the evidence check caught</h2>
+    <p id="routed" class="small"></p>
+
+    <h2>Cost</h2>
+    <div class="table-scroll"><table id="tableCost"></table></div>
+
+    <h2>Method</h2>
+    <div id="method" class="small"></div>
+
+    <h2>Limitations</h2>
+    <ul class="small">
+      <li>Ground truth is the catalog record, not the physical product. A value can be wrong in the catalog and still
+        count as correct here, and an answer that is true of the real product counts as unsupported if the record does
+        not state it.</li>
+      <li>The assistant is given the right product record. Retrieval mistakes, such as picking the wrong product, are
+        not measured.</li>
+      <li>Questions follow fixed templates in English. Real customers phrase questions more loosely, which is likely to
+        be harder.</li>
+      <li>Allergen questions exclude cases the record cannot settle, such as an empty allergen list next to an
+        ingredient list. Those are common in practice and deserve their own study.</li>
+      <li>One model, one date, one sample. The rates describe this catalog and this configuration, not assistants in
+        general.</li>
+    </ul>
+
+    <h2>How many questions would your own audit need?</h2>
+    <div class="card">
+      <div class="grid-2">
+        <label class="small">Expected rate (%)<input id="ssP" type="number" value="10" min="1" max="99"></label>
+        <label class="small">Margin of error, ± points<input id="ssM" type="number" value="3" min="0.5" max="25" step="0.5"></label>
+        <label class="small">Design effect<input id="ssD" type="number" value="1.2" min="1" max="5" step="0.1"></label>
+        <div><p class="small muted">Questions needed per group compared</p><p class="hero" id="ssN" style="font-size:40px"></p></div>
+      </div>
+      <p class="small muted">n = deff × 1.96² × p(1 − p) / m². The design effect inflates n for unequal weights or
+        clustered questions; 1.0 means a simple random sample.</p>
+    </div>
+  </div>
+</main>
+
+<div id="tooltip" role="status"></div>
+<footer class="site">
+  <div class="wrap">
+    <p>Contains data from <a href="https://openfoodfacts.org">Open Food Facts</a>, available under the
+      <a href="https://opendatacommons.org/licenses/odbl/1-0/">Open Database License</a>.</p>
+    <p>Not food-safety or allergy advice.</p>
+    <p>A dated portfolio project by Tiago Dantas, built in September 2026 on public data. Code under the MIT license.</p>
+  </div>
+</footer>
+<script src="/static/audit.js"></script>
+</body>
+</html>

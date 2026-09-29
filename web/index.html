@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalog assistant audit</title>
+  <meta name="description" content="How often does a grocery product assistant answer when the catalog has no answer? A measured demo on 5,000 Open Food Facts products.">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <h1>Catalog assistant audit</h1>
+    <nav>
+      <a href="/" aria-current="page">Demo</a>
+      <a href="/audit">Audit results</a>
+      <a href="https://github.com/tiagomendesdantas/catalog-assistant-audit">Code</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="lede">Grocery stores are putting assistants in front of their product catalogs. Catalogs have gaps: a
+    nutrition value that was never entered, an allergen list that is empty. The risk is an assistant that fills the
+    gap from general knowledge and answers anyway.</p>
+  <p class="small">This demo runs an assistant over 5,000 real US products from Open Food Facts. Every answer must
+    cite the catalog fields it used, and a deterministic check sends answers whose citations don't match the record
+    to human review. The <a href="/audit">audit</a> measures three versions of the assistant on questions whose
+    correct answer is known from the record, including questions the record cannot answer.</p>
+
+  <h2>Try it</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>1. Pick a product</h3>
+      <input id="search" type="search" placeholder="Search 5,000 products, e.g. cereal, salsa, yogurt" autocomplete="off" aria-label="Search products">
+      <ul id="results" class="results" aria-live="polite"></ul>
+    </div>
+    <div class="card">
+      <h3>2. What the assistant sees</h3>
+      <div id="product"><p class="small muted">No product selected.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3. Ask a question</h3>
+    <div class="chips" id="chips"></div>
+    <form id="ask" class="row">
+      <input id="question" type="text" maxlength="300" placeholder="Does it contain milk?" aria-label="Your question" disabled>
+      <button type="submit" id="askBtn" disabled>Ask</button>
+    </form>
+    <div id="answer" aria-live="polite"></div>
+    <p class="small muted">Live questions run configuration C with the evidence check. They are rate-limited and
+      capped by a daily budget; when the cap is reached, the precomputed examples below still work.</p>
+  </div>
+
+  <h2>Examples from the test run</h2>
+  <p class="small">The same question, asked of the three configurations. Outcomes are graded against the catalog
+    record.</p>
+  <div id="examples"><p class="small muted">Loading…</p></div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p>Contains data from <a href="https://openfoodfacts.org">Open Food Facts</a>, available under the
+      <a href="https://opendatacommons.org/licenses/odbl/1-0/">Open Database License</a>.</p>
+    <p>Not food-safety or allergy advice. Answers come from a crowdsourced catalog that can contain errors; always
+      read the package label.</p>
+    <p>A dated portfolio project by Tiago Dantas, built in September 2026 on public data. Code under the MIT license.</p>
+  </div>
+</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>
