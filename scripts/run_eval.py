@@ -56,6 +56,9 @@ def main() -> None:
                     help="flex: direct calls on the flex tier, for models the Batch API rejects")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--condition", choices=["all", "clean", "retrieval"], default="all")
+    if "--resume" in sys.argv:
+        resume(sys.argv[sys.argv.index("--resume") + 1])
+        return
     args = ap.parse_args()
     if args.split == "test" and not (args.confirm_test or args.dry_run):
         sys.exit("Test runs are counted in the README. Re-run with --confirm-test.")
@@ -129,6 +132,48 @@ def main() -> None:
                 row["error"] = item.get("error") or response.get("body")
             rows.append(row)
     finish(args, configs, questions, requests, qpath, started, rows, batch_id=batch.id)
+
+
+def resume(run_id: str) -> None:
+    """Re-send, unchanged, the requests of a run that never got a response (API or billing errors),
+    and merge the answers into the same run. Requests that were answered are never re-sent, so this
+    completes an interrupted run rather than running the questions again. Logged as a resume event.
+
+        uv run python scripts/run_eval.py --resume <run_id>
+    """
+    import openai
+
+    log = [json.loads(line) for line in (RUNS / "log.jsonl").read_text().splitlines()]
+    entry = next(e for e in log if e.get("run_id") == run_id and "split" in e)
+    raw_path = RUNS / run_id / "raw.jsonl"
+    rows = [json.loads(line) for line in raw_path.read_text().splitlines()]
+    pending = {r["custom_id"] for r in rows if r["type"] != "succeeded"}
+    if not pending:
+        print("nothing to resend")
+        return
+    by_qid = {q.qid: q for q in read(DATA / "questions" / "questions.jsonl")}
+    catalog = load()
+    requests = []
+    for cid in sorted(pending):
+        config, qid = cid.split("-", 1)
+        q = by_qid[qid]
+        requests.append((cid, request_params(config, render_context(q.context, catalog), q.text,
+                                             entry["model"], entry["reasoning_effort"])))
+    print(f"resending {len(requests)} unanswered requests of {run_id} ({entry['model']})")
+    load_dotenv()
+    fresh = {r["custom_id"]: r for r in run_flex(openai.OpenAI(), requests, 10)}
+    backup = raw_path.with_name(f"raw.before-resume-{time.strftime('%Y%m%d-%H%M%S', time.gmtime())}.jsonl")
+    backup.write_text(raw_path.read_text(), encoding="utf-8")
+    merged = [fresh.get(r["custom_id"], r) if r["custom_id"] in pending else r for r in rows]
+    raw_path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in merged), encoding="utf-8")
+    still = sum(1 for r in merged if r["type"] != "succeeded")
+    event = {"run_id": run_id, "event": "resume", "resent": len(requests), "still_unanswered": still,
+             "reason": sorted({(r.get("error") or r["type"])[:120] for r in rows
+                               if r["custom_id"] in pending}),
+             "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    with (RUNS / "log.jsonl").open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(event) + "\n")
+    print(f"merged; {still} still unanswered; logged as a resume event")
 
 
 def run_flex(client, requests, workers: int) -> list[dict]:

@@ -39,7 +39,10 @@ def main() -> None:
     published: dict = {"models": {}, "runs": []}
     for run_id in args.run_ids:
         split = "test" if run_id.endswith("-test") else "dev"
-        entry = next(e for e in log if e["run_id"] == run_id)
+        entry = next(e for e in log if e["run_id"] == run_id and "split" in e)
+        resumes = [e for e in log if e["run_id"] == run_id and e.get("event") == "resume"]
+        if resumes:
+            entry = {**entry, "resumed": resumes}
         summary = score(DATA / "runs" / run_id, DATA / "questions" / "questions.jsonl", split,
                         entry["model"])
         print(f"\n{run_id}")
@@ -63,7 +66,7 @@ def main() -> None:
 
     if args.publish or args.preview_dir:
         split = "test" if args.publish else "dev"
-        published["test_runs_to_date"] = sum(1 for e in log if e["split"] == "test")
+        published["test_runs_to_date"] = sum(1 for e in log if e.get("split") == "test")
         out_dir = ROOT / "web" if args.publish else args.preview_dir
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "results.json").write_text(json.dumps(published, indent=2) + "\n", encoding="utf-8")
