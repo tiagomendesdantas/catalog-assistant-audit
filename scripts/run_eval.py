@@ -104,7 +104,7 @@ def main() -> None:
     if batch.status != "completed":
         sys.exit(f"batch ended as {batch.status}: {batch.errors}")
 
-    run_id = f"{time.strftime('%Y%m%d-%H%M%S', time.gmtime())}-{args.split}"
+    run_id = f"{time.strftime('%Y%m%d-%H%M%S', time.gmtime())}-{args.model}-{args.split}"
     out_dir = RUNS / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
     seen: set[str] = set()
